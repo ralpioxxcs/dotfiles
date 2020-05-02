@@ -1,0 +1,17 @@
+[user]
+	email = ralpioxx@gmail.com
+	name = ralpioxxcs
+
+[push]
+  default = simple
+
+[color "diff"]
+  meta = yellow bold
+  frag = magenta bold
+  old = red bold
+  new = green bold
+  whitespace = red reverse
+
+[color]
+  ui = auto
+
