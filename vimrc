@@ -17,10 +17,12 @@ Plugin 'vim-airline/vim-airline'	" status bar
 Plugin 'ctrlpvim/ctrlp.vim'		" file explorer
 Plugin 'dracula/vim'			" vim theme
 Plugin 'octol/vim-cpp-enhanced-highlight' " syntax highlighting
-Plugin 'ervandew/supertab'		" <Tab> auto complete
-Plugin 'Valloric/YouCompleteMe' " auto completion 
-Plugin 'rdnetto/YCM-Generator' " .ycm_extra_conf.py file generator
+"Plugin 'ervandew/supertab'		" <Tab> auto complete
+"Plugin 'Valloric/YouCompleteMe' " auto completion 
+"Plugin 'rdnetto/YCM-Generator' " .ycm_extra_conf.py file generator
 Plugin 'rhysd/vim-clang-format' " text indent clang format
+Plugin 'junegunn/fzf', { 'do': { -> fzf#install()}}
+Plugin 'junegunn/fzf.vim'
 call vundle#end()
 filetype plugin indent on
 "-----------------------------
@@ -39,7 +41,6 @@ set smarttab
 set incsearch
 set nowrapscan
 set hlsearch
-
 hi search ctermbg=3
 set wrap
 set encoding=utf-8
@@ -56,9 +57,8 @@ if has("autocmd")
 endif
 
 let mapleader=","           "set hotkey
-"clip board key ( Ctrl+C , Ctrl+V )
-noremap <Leader>c "+t
-noremap <Leader>v "+p
+
+set clipboard=unnamedplus "set system clipboard
 
 noremap j gj
 noremap k gk
