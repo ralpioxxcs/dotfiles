@@ -48,6 +48,7 @@ Plug 'junegunn/fzf', { 'do': { -> fzf#install() }}
 Plug 'junegunn/fzf.vim'
 
 " Language Server Protocol
+Plug 'prabirshrestha/async.vim'
 Plug 'prabirshrestha/vim-lsp'
 
 " Change working dir to root
