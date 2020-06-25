@@ -38,6 +38,9 @@ Plug 'majutsushi/tagbar'
 " Themes
 Plug 'dracula/vim'
 Plug 'w0ng/vim-hybrid'
+Plug 'veloce/vim-aldmeris'
+Plug 'chriskempson/base16-vim'
+Plug 'hzchirs/vim-material'
 
 " CPP Plugin
 Plug 'octol/vim-cpp-enhanced-highlight'

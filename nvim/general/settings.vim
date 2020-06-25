@@ -34,21 +34,10 @@ set guifont=Hack\ Nerd\ Font " 폰트 설정
 set ignorecase              " 검색시 대소문자 구별 X
 
 " 파일 열기 마지막 부분 저장
-autocmd BufReadPost *
-     \ if line("'\"") > 0 && line("'\"") <= line("$") |
-     \   exe "normal! g`\"" |
-     \ endi" Register ccls C++ lanuage server.
-     if executable('ccls')
-        au User lsp_setup call lsp#register_server({
-           \ 'name': 'ccls',
-           \ 'cmd': {server_info->['ccls']},
-           \ 'root_uri': {server_info->lsp#utils#path_to_uri(lsp#utils#find_nearest_parent_file_directory(lsp#utils#get_buffer_path(), 'compile_commands.json'))},
-           \ 'initialization_options': {'cache': {'directory': '/tmp/ccls/cache' }},
-           \ 'whitelist': ['c', 'cpp', 'objc', 'objcpp', 'cc'],
-           \ })
-     endif
-
-
-
-" neovim terminal
-
+if has("autocmd")
+" When editing a file, always jump to the last cursor position
+ autocmd BufReadPost *
+  \ if line("'\"") > 0 && line ("'\"") <= line("$") |
+  \ exe "normal g'\"" |
+  \ endif
+endif
