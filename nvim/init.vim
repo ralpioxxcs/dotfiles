@@ -15,7 +15,6 @@ source $HOME/.config/nvim/themes/airline.vim
 " Plugin configs
 source $HOME/.config/nvim/plugin-config/fzf.vim
 source $HOME/.config/nvim/plugin-config/vim-multiple-cursors.vim
-source $HOME/.config/nvim/plugin-config/vim-lsp.vim
 source $HOME/.config/nvim/plugin-config/vim-clang-format.vim
 source $HOME/.config/nvim/plugin-config/tagbar.vim
 source $HOME/.config/nvim/plugin-config/coc-nvim.vim

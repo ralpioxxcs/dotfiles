@@ -5,13 +5,13 @@
       "filetypes": ["c", "cpp"],
       "rootPatterns": [".ccls", "compile_commands.json"],
       "initializationOptions": {
-         "cache": {
-           "directory": "/tmp/ccls"
-         },
-         "clang": {
-           "resourceDir": "/usr/local/clang/9.0.0"
-         },
-         "compilationDatabaseDirectory": "./build/"
+        "cache": {
+          "directory": "/tmp/ccls"
+        },
+        "clang": {
+          "resourceDir": "/usr/local/clang/9.0.0"
+        },
+        "compilationDatabaseDirectory": "./build/"
       },
       "disableDiagnostics": false
     },
@@ -22,10 +22,8 @@
     },
     "cmake": {
       "command": "cmake-language-server",
-      "filetypes" : ["cmake"],
-      "rootPatterns": [
-        "build/"
-      ],
+      "filetypes": ["cmake"],
+      "rootPatterns": ["build/"],
       "initializationOptions": {
         "buildDirectory": "build"
       }
@@ -35,73 +33,6 @@
       "args": ["start"],
       "filetypes": ["sh"],
       "ignoredRootPaths": ["~"]
-    },
-  "python": {
-    "command": "python",
-    "args": [
-      "-mpyls",
-      "-vv",
-      "--log-file",
-      "/tmp/lsp_python.log"
-    ],
-    "trace.server": "verbose",
-    "filetypes": [
-      "python"
-    ],
-    "settings": {
-      "pyls": {
-        "enable": true,
-        "trace": {
-          "server": "verbose"
-        },
-        "commandPath": "",
-        "configurationSources": [
-          "pycodestyle"
-        ],
-        "plugins": {
-          "jedi_completion": {
-            "enabled": true
-          },
-          "jedi_hover": {
-            "enabled": true
-          },
-          "jedi_references": {
-            "enabled": true
-          },
-          "jedi_signature_help": {
-            "enabled": true
-          },
-          "jedi_symbols": {
-            "enabled": true,
-            "all_scopes": true
-          },
-          "mccabe": {
-            "enabled": true,
-            "threshold": 15
-          },
-          "preload": {
-            "enabled": true
-          },
-          "pycodestyle": {
-            "enabled": true
-          },
-          "pydocstyle": {
-            "enabled": false,
-            "match": "(?!test_).*\\.py",
-            "matchDir": "[^\\.].*"
-          },
-          "pyflakes": {
-            "enabled": true
-          },
-          "rope_completion": {
-            "enabled": true
-          },
-          "yapf": {
-            "enabled": true
-          }
-        }
-      }
     }
-  }
   }
 }
