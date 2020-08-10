@@ -1,8 +1,13 @@
 "This is the default extra key bindings
+"let g:fzf_action = {
+"  \ 'ctrl-t': 'tab split',
+"  \ 'ctrl-x': 'split',
+"  \ 'ctrl-v': 'vsplit'
+"}
 let g:fzf_action = {
   \ 'ctrl-t': 'tab split',
   \ 'ctrl-x': 'split',
-  \ 'ctrl-v': 'vsplit' }
+  \ 'ctrl-v': 'vsplit'}
 
 " Enable per-command history
 " - History files will be stored in the specified directory
@@ -14,9 +19,11 @@ let g:fzf_buffers_jump = 1
 let g:fzf_tags_command = 'ctags -R'
 
 " fzf layout
-let g:fzf_layout = {'up':'~90%', 'window': { 'width': 0.8, 'height': 0.8,'yoffset':0.5,'xoffset': 0.5, 'highlight': 'Todo', 'border': 'sharp' } }
+"let g:fzf_layout = {'up':'~90%', 'window': { 'width': 0.9, 'height': 0.9, 'yoffset':0.5,'xoffset': 0.5, 'highlight': 'Todo', 'border': 'rounded' } }
+let g:fzf_layout = {'up':'~90%', 'window': { 'width': 0.9, 'height': 0.7, 'yoffset':0.5,'xoffset': 0.5, 'border': 'rounded' } }
 
-let $FZF_DEFAULT_OPTS = '--layout=reverse --inline-info'
+let $FZF_DEFAULT_OPTS="--ansi --preview-window 'right:60%' --layout reverse --margin=1,4 --preview 'bat --color=always --style=header,grid --line-range :300 {}'"
+"let $FZF_DEFAULT_OPTS = '--layout=reverse --inline-info'
 let $FZF_DEFAULT_COMMAND="rg --files --hidden --glob '!.git/**'"
 
 " Customize fzf colors to match your color scheme
@@ -41,9 +48,9 @@ command! -bang -nargs=? -complete=dir Files
     \ call fzf#vim#files(<q-args>, fzf#vim#with_preview({'options': ['--layout=reverse', '--inline-info']}), <bang>0)
 
 " Get text in files with Rg
-" command! -bang -nargs=* Rg
-"   \ call fzf#vim#grep(
-"   \   "rg --column --line-number --no-heading --color=always --smart-case --glob '!.git/**' ".shellescape(<q-args>), 1,
+ command! -bang -nargs=* Rg
+   \ call fzf#vim#grep(
+   \   "rg --column --line-number --no-heading --color=always --smart-case --glob '!.git/**' ".shellescape(<q-args>), 1,
 
  " Make Ripgrep ONLY search file contents and not filenames
 command! -bang -nargs=* Rg

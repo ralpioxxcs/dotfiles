@@ -6,11 +6,11 @@ let mapleader = ","
 """""""""""""""""""""""""""""""""""""""""""""""""""""
 " [FZF]
 nnoremap <C-p> :Files<Cr>
-
+nnoremap <C-f> :Rg<Cr>
+nnoremap <C-b> <b> :Buffers<Cr>
 
 "/////////////////////////////////////////////////////////////
 " [Tab Setting]
-
 " 버퍼 새로 열기
 nmap <leader>T : enew<cr>
 
