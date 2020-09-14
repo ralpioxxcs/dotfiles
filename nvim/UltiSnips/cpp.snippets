@@ -1,0 +1,24 @@
+snippet cofo "CodeForce test case input snippet"
+#include <bits/stdc++.h>
+#define TEST
+using namespace std;
+int main() {
+  cin.tie(0)->sync_with_stdio(0);
+  cout.tie(0);
+#ifdef TEST
+  freopen("${1:TextFileName}.txt", "r", stdin);
+#endif
+  int T;
+	int n;
+  while (T--) {
+    cin >> n;
+    vector<${2:TypeName}> a(n);
+    for (int i = 0; i < n; i++) {
+      cin >> a[i];
+			$3
+    }
+  }
+  return 0;
+}
+
+endsnippet

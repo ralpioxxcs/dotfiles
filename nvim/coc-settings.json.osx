@@ -11,9 +11,8 @@
         "client": {
           "snippetSupport" : true
         },
-        "clang": {
-          "resourceDir": "/usr/local/clang/9.0.0"
-        },
+        "clang" : {
+          "resourceDir": "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/clang/11.0.3"},
         "compilationDatabaseDirectory": "./build/"
       }
     },
