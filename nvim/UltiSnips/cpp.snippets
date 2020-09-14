@@ -8,13 +8,13 @@ int main() {
 #ifdef TEST
   freopen("${1:TextFileName}.txt", "r", stdin);
 #endif
-  int T;
-	int n;
+  ${2:TypeName} T;
+	${2:TypeName} n;
 	cin >> T;
   while (T--) {
     cin >> n;
     vector<${2:TypeName}> a(n);
-    for (int i = 0; i < n; i++) {
+    for (${2:TypeName} i = 0; i < n; i++) {
       cin >> a[i];
 			$3
     }
