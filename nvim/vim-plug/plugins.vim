@@ -64,4 +64,7 @@ Plug 'ryanoasis/vim-devicons'
 Plug 'SirVer/ultisnips'
 Plug 'honza/vim-snippets'
 
+" Vim Wiki
+Plug 'vimwiki/vimwiki', { 'branch': 'dev' }
+
 call plug#end()
