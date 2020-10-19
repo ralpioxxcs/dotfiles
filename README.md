@@ -2,14 +2,13 @@
 dotfiles is the repository for setting developing environment.
 
 ## System requisite
-* Ubuntu 18.04 LTS
-* Gnome environment
+* Ubuntu LTS (16~20)
 
 ## Supported dotfiles
 * zsh, oh-my-zsh
-* Neovim
-* Tmux
-* Git
+* neovim
+* tmux
+* git
 
 ## How to apply
 Just execute **configure.sh** shell script
