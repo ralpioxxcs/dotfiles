@@ -2,7 +2,7 @@
 dotfiles is the repository for setting developing environment.
 
 ## System requisite
-* Ubuntu LTS (16~20)
+* Linux
 
 ## Supported dotfiles
 * zsh, oh-my-zsh
@@ -11,10 +11,10 @@ dotfiles is the repository for setting developing environment.
 * git
 
 ## How to apply
-Just execute **configure.sh** shell script
+Just execute **config.sh** shell script
 ```Bash
-$ chmod + configure.sh
-$ ./configure.sh
+$ chmod + config.sh
+$ ./config.sh
 ```
 
 ### coc-nvim
