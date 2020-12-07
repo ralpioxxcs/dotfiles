@@ -5,7 +5,7 @@ dotfiles is the repository for setting developing environment.
 * Linux
 
 ## Supported dotfiles
-* zsh, oh-my-zsh
+* bash
 * neovim
 * tmux
 * git
