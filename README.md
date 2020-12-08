@@ -1,8 +1,9 @@
 # dotfiles
 dotfiles is the repository for setting developing environment.
 
-## System requisite
-* Linux
+## requisite package
+* zsh, oh-my-zsh[https://github.com/ohmyzsh/ohmyzsh]
+* Bat[https://github.com/sharkdp/bat]
 
 ## Supported dotfiles
 * bash

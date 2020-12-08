@@ -1,3 +1,4 @@
+#!/bin/bash
 
 # easy navigation
 alias ..="cd .."
