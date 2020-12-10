@@ -1,6 +1,7 @@
 #!/bin/bash
 
 export EDITOR="nvim"
+alias zshrc='${=EDITOR} ${ZDOTDIR:-$HOME}/.zshrc'
 
 alias d="docker"
 alias dc="docker-compose"
