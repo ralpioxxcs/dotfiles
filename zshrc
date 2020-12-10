@@ -94,7 +94,34 @@ plugins=(
 source "${ZSH}/oh-my-zsh.sh"
 
 # #################
-# ETC
+# FUNCTIONS
 # #################
+gitzip() {
+  git archive -o $(basename $PWD).zip HEAD
+}
 
+gittgz() {
+  git archive -o $(basename $PWD).tgz HEAD
+}
+
+gitdiffb() {
+  if [ $# -ne 2 ]; then
+    echo two branch names required
+    return
+  fi
+  git log --graph \
+  --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr)%Creset' \
+  --abbrev-commit --date=relative $1..$2
+}
+
+alias gitv='git log --graph --format="%C(auto)%h%d %s %C(black)%C(bold)%cr"'
+
+miniprompt() {
+  unset PROMPT_COMMAND
+  PS1="\[\e[38;5;168m\]$ \[\e[0m\]"
+}
+
+# #################
+# EXTRAS
+# #################
 export BAT_THEME="Dracula"
