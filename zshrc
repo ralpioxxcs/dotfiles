@@ -83,6 +83,7 @@ plugins=(
   last-working-dir 
   zsh-autosuggestions
   zsh-syntax-highlighting 
+  zsh-interactive-cd
   dotenv
 
   # docker
@@ -116,10 +117,54 @@ gitdiffb() {
 
 alias gitv='git log --graph --format="%C(auto)%h%d %s %C(black)%C(bold)%cr"'
 
+fzfpw() {
+  fzf --preview '[[ $(file --mime {}) =~ binary ]] &&
+                echo {} is a binary file ||
+                (highlight -0 ansi -l {} ||
+                coderay {} ||
+                rougify {} ||
+                cat {}) 2> /dev/null | head -500'
+              }
+
+
 miniprompt() {
   unset PROMPT_COMMAND
   PS1="\[\e[38;5;168m\]$ \[\e[0m\]"
 }
+
+# tmux
+tmuxkillf () {
+  local sessions
+  sessions="$(tmux ls|fzf --exit-0 --multi)"  || return $?
+  local i
+  for i in "${(f@)sessions}"
+  do
+    [[ $i =~ '([^:]*):.*' ]] && {
+      echo "Killing $match[1]"
+      tmux kill-session -t "$match[1]"
+    }
+  done
+}
+
+# docker
+function fb() {
+  local cid
+  cid=$(docker ps -a | sed 1d | fzf -1 -q "$1" | awk '{print $1}')
+
+  [ -n "$cid" ] && docker start "$cid" && docker attach "$cid"
+}
+
+function ds() {
+  local cid
+  cid=$(docker ps | sed 1d | fzf -q "$1" | awk '{print $1}')
+
+  [ -n "$cid" ] && docker stop "$cid"
+}
+
+function drmi() {
+  docker images | sed 1d | fzf -q "$1" --no-sort -m --tac | awk '{ print $3 }' | xargs -r docker rmi
+}
+
 
 # #################
 # EXTRAS
