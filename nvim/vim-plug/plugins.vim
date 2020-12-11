@@ -1,11 +1,16 @@
 " neovim settings - plugin install list
 " --------------------------------------
 
+" Automatically install missing plugins on startup
+autocmd VimEnter *
+  \  if len(filter(values(g:plugs), '!isdirectory(v:val.dir)'))
+  \|   PlugInstall --sync | q
+  \| endif
+
 " auto-install vim-plug
 if empty(glob('~/.config/nvim/autoload/plug.vim'))
   silent !curl -fLo ~/.config/nvim/autoload/plug.vim --create-dirs
     \ https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
-  "autocmd VimEnter * PlugInstall
   autocmd VimEnter * PlugInstall | source $MYVIMRC
 endif
 
@@ -35,14 +40,10 @@ Plug 'vim-airline/vim-airline-themes'
 " tag bar (ctags)
 Plug 'majutsushi/tagbar'
 
-" Themes
+" themes
 Plug 'dracula/vim'
-Plug 'w0ng/vim-hybrid'
-Plug 'veloce/vim-aldmeris'
-Plug 'chriskempson/base16-vim'
-Plug 'hzchirs/vim-material'
 
-" CPP Plugin
+" cpp plugins
 Plug 'octol/vim-cpp-enhanced-highlight'
 Plug 'rhysd/vim-clang-format'
 
