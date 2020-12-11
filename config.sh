@@ -18,7 +18,7 @@ COLOR_LIGHT_BLUE='\033[1;34m'
 COLOR_LIGHT_PURPLE='\033[1;35m'
 COLOR_LIGHT_CYAN='\033[1;36m'
 COLOR_WHITE='\033[1;37m'
-
+################################
 # check if package is installed
 # installed -> return True
 # not installed -> return False
@@ -66,49 +66,74 @@ os_type=$(uname)
 
 echo -e "${COLOR_WHITE}Configure all development enviroments${COLOR_NONE}"
 
-check_package "vim"
+echo -e "${COLOR_WHITE}Check pacakges ..${COLOR_NONE}"
+check_package "neovim"
 if [ "${retVal}" = "True" ]; then
     echo -e "${COLOR_GREEN}vim is installed${COLOR_NONE}"
 elif [ "${retVal}" = "False" ]; then
-    sudo apt-get install vim
+    echo -e "${COLOR_GREEN}vim is not installed${COLOR_NONE}"
 fi
 
 check_package "git"
 if [ "${retVal}" = "True" ]; then
     echo -e "${COLOR_GREEN}git is installed${COLOR_NONE}"
 elif [ "${retVal}" = "False" ]; then
-    sudo apt-get install vim
+    echo -e "${COLOR_GREEN}git is not installed${COLOR_NONE}"
 fi
 
-# Install vim & git
-#sudo apt-get install vim git \
-#  && echo -e "${COLOR_GREEN} success to install git and vim ${COLOR_NONE}" \
-#  || { echo -e "${COLOR_RED} failed to install git and vim ${COLOR_NONE}"; }
+[[ -f "$HOME/.oh-my-zsh" ]] && cp agnoster.zsh-theme $HOME/.oh-my-zsh/themes/
+cp zshrc $HOME/.zshrc
+cp aliases $HOME/.aliases
+cp wgetrc $HOME/.wgetrc
 
 # Apply all dotfiles
 echo "Select dotfile which you want to apply?"
-echo "1) vim"
-echo "2) tmux"
-echo "3) git"
-echo "4) all"
+echo "1) neovim"
+echo "2) zsh & oh-my-zsh"
+echo "3) tmux"
 read ans
 
 if [ "$ans" != "${ans#[1]}" ] ;then
-    echo vim
-    if [ -f "vimrc" ] ;then
-      cp vimrc ~/.vimrc
-      echo -e '\E[47;34m'"\033[1mE\033[0m"
-    else
-      echo -e '\E[47;34m'"\033[1mE\033[0m"
-    fi
+	check_package "neovim"
+	if [ "${retVal}" = "True" ]; then
+		echo "nvim is already installed"
+	elif [ "${retVal}" == "False" ]; then
+		echo "nvim is not installed"
+		sudo apt-get install software-properties-common
+		sudo add-apt-repository ppa:neovim-ppa/stable
+		sudo apt-get update
+		sudo apt-get install -y neovim
+		sudo apt-get install python-dev python-pip python3-dev python3-pip
+		sudo update-alternatives --install /usr/bin/vi vi /usr/bin/nvim 60
+		sudo update-alternatives --config vi
+		sudo update-alternatives --install /usr/bin/vim vim /usr/bin/nvim 60
+		sudo update-alternatives --config vim
+		sudo update-alternatives --install /usr/bin/editor editor /usr/bin/nvim 60
+		sudo update-alternatives --config editor
+	fi
+
+  # neovim configuration
+  if [ -d "$HOME/.config/nvim" ]; then
+    read -p "neovim configuration folder is already existed. Do you overwrite it? (y/n)" yn
+    case $yn in
+      [Yy]* ) 
+        mkdir -p $HOME/.config/
+        rsync -azvh nvim $HOME/.config/
+        if [ ! -f "$HOME/.config/nvim/autoload/plug.vim" ]; then
+          curl -fLo ~/.vim/autoload/plug.vim --create-dirs \
+            https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
+          nvim -c "PlugInstall" -c "qall"
+        fi
+    esac
+   else
+	mkdir -p $HOME/.config/
+        rsync -azvh nvim $HOME/.config/
+        if [ ! -f "$HOME/.config/nvim/autoload/plug.vim" ]; then
+          curl -fLo ~/.vim/autoload/plug.vim --create-dirs \
+            https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
+          nvim -c "PlugInstall" -c "qall"
+        fi
+  fi
 elif [ "$ans" != "${ans#[2]}" ] ;then
-    echo tmux
-    cp tmux.conf ~/.tmux.conf
-elif [ "$ans" != "${ans#[3]}" ] ;then
-    echo git
-    cp gitconfig ~/.gitconfig
-else
-    echo all setting
+  check_package "neovim"
 fi
-
-
