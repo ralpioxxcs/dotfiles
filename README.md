@@ -1,10 +1,10 @@
 # dotfiles
 dotfiles is the repository for setting developing environment.
 
-## requisite package
-* zsh, [oh-my-zsh](https://github.com/ohmyzsh/ohmyzsh)
+## Requisite
+* zsh + [oh-my-zsh](https://github.com/ohmyzsh/ohmyzsh)
 * neovim
-* [Bat](https://github.com/sharkdp/bat)
+  * [coc.nvim](https://github.com/neoclide/coc.nvim)
 
 ## Supported dotfiles
 * bash
@@ -13,13 +13,8 @@ dotfiles is the repository for setting developing environment.
 * git
 
 ## How to apply
-Just execute **config.sh** shell script
+copy to specific path each dotfiles or use **config.sh** script
 ```Bash
-$ chmod + config.sh
+$ chmod u+x config.sh
 $ ./config.sh
 ```
-
-### coc-nvim
-* :CocInstall coc-emoji coc-explorer coc-json coc-lists coc-marketplace
-* :CocInstall coc-pairs coc-prettier coc-python coc-sh coc-snippets 
-* :CocInstall coc-tsserver coc-yank
