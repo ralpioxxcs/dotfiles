@@ -24,7 +24,7 @@ COLOR_WHITE='\033[1;37m'
 check_package_installed() {
   local value=$1
   REQUIRED_PKG=${value}
-  PKG_OK=$(dpkg-query -W --showformat='${Status}\n' $REQUIRED_PKG|grep "install ok installed")
+  PKG_OK=$(dpkg-query -W --showformat='${Status}\n' $REQUIRED_PKG | grep "install ok installed")
   echo Checking for $REQUIRED_PKG: $PKG_OK
   if [ "" = "$PKG_OK" ]; then
     retVal="False"
@@ -35,7 +35,7 @@ check_package_installed() {
 
 config_neovim() {
   local pac="neovim"
-  check_package_installed pac
+  check_package_installed $pac
   if [ "${retVal}" = "True" ]; then
     echo "$pac is already installed"
   elif [ "${retVal}" == "False" ]; then
@@ -78,7 +78,7 @@ config_neovim() {
 
 config_zsh() {
   local pac="zsh"
-  check_package_installed pac
+  check_package_installed $pac
   if [ "${retVal}" = "True" ]; then
     echo "$pac is already installed"
   elif [ "${retVal}" == "False" ]; then
@@ -97,16 +97,30 @@ config_zsh() {
   cp agnoster.zsh-theme $ZSH/themes
 }
 
-config
+config_tmux() {
+  local pac="tmux"
+  check_package_installed $pac
+  if [ "${retVal}" = "True" ]; then
+    echo "$pac is already installed"
+  elif [ "${retVal}" == "False" ]; then
+    echo "$pac is not installed"
+    sudo apt install -y tmux
+  fi
+
+  local file=".tmux.conf"
+  if [ -f "$HOME/$file" ]; then
+    read -p "$file is already existed. overwrite it? (y/n)" yn
+    case $yn in
+      [Yy]* ) cp tmux.conf $HOME/.tmux.conf
+    esac
+  fi
+
+  ~/.tmux/plugins/tpm/scripts/install_plugins.sh
+}
 
 ##-------------------------------------------------------------------------##
 
 os_type=$(uname)
-
-[[ -f "$HOME/.oh-my-zsh" ]] && cp agnoster.zsh-theme $HOME/.oh-my-zsh/themes/
-cp zshrc $HOME/.zshrc
-cp aliases $HOME/.aliases
-cp wgetrc $HOME/.wgetrc
 
 echo "Select dotfile which you want to apply"
 echo "1) neovim"
