@@ -74,6 +74,16 @@ config_neovim() {
               nvim -c "PlugInstall" -c "qall"
     fi
   fi
+
+  local pac="nodejs"
+  check_package_installed $pac
+  if [ "${retVal}" = "True" ]; then
+    echo "$pac is already installed"
+  elif [ "${retVal}" == "False" ]; then
+    echo "$pac is not installed"
+    curl -sL https://deb.nodesource.com/setup_15.x | sudo -E bash -
+    sudo apt-get install -y nodejs
+  fi
 }
 
 config_zsh() {
@@ -94,6 +104,9 @@ config_zsh() {
     sh -c "$(curl -fsSL https://raw.githubusercontent.com/robbyrussell/oh-my-zsh/master/tools/install.sh)"
   fi
   git clone https://github.com/zsh-users/zsh-syntax-highlighting.git ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-syntax-highlighting
+  git clone https://github.com/zsh-users/zsh-autosuggestions ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-autosuggestions
+  git clone --depth 1 https://github.com/junegunn/fzf.git ~/.fzf
+  ~/.fzf/install
   cp agnoster.zsh-theme $ZSH/themes
 }
 
@@ -113,8 +126,12 @@ config_tmux() {
     case $yn in
       [Yy]* ) cp tmux.conf $HOME/.tmux.conf
     esac
+  else
+    cp tmux.conf $HOME/.tmux.conf
   fi
 
+
+  git clone https://github.com/tmux-plugins/tpm ~/.tmux/plugins/tpm
   ~/.tmux/plugins/tpm/scripts/install_plugins.sh
 }
 
