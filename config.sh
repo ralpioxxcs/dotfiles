@@ -139,6 +139,11 @@ config_tmux() {
 
 os_type=$(uname)
 
+if [ "$os_type" == "Darwin" ]; then
+  echo "not support osx"
+  exit
+fi
+
 echo "Select dotfile which you want to apply"
 echo "1) neovim"
 echo "2) zsh & oh-my-zsh"
