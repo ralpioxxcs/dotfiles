@@ -75,6 +75,7 @@ config_neovim() {
     fi
   fi
 
+  # Dependency - Node JS
   local pac="nodejs"
   check_package_installed $pac
   if [ "${retVal}" = "True" ]; then
@@ -83,6 +84,16 @@ config_neovim() {
     echo "$pac is not installed"
     curl -sL https://deb.nodesource.com/setup_15.x | sudo -E bash -
     sudo apt-get install -y nodejs
+  fi
+
+  # Dependency - Ctags
+  local pac="exuberant-ctags"
+  check_package_installed $pac
+  if [ "${retVal}" = "True" ]; then
+    echo "$pac is already installed"
+  elif [ "${retVal}" == "False" ]; then
+    echo "$pac is not installed"
+    sudo apt-get install -y exuberant-ctags
   fi
 }
 
