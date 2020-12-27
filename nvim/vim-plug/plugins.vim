@@ -68,4 +68,7 @@ Plug 'honza/vim-snippets'
 " Vim Wiki
 Plug 'vimwiki/vimwiki', { 'branch': 'dev' }
 
+" Vim-go
+Plug 'fatih/vim-go' { 'do': ':GoInstallBinaries' }
+
 call plug#end()

@@ -95,6 +95,18 @@ config_neovim() {
     echo "$pac is not installed"
     sudo apt-get install -y exuberant-ctags
   fi
+
+  # Dependency - Ripgrep
+  local pac="ripgrep"
+  check_package_installed $pac
+  if [ "${retVal}" = "True" ]; then
+    echo "$pac is already installed"
+  elif [ "${retVal}" == "False" ]; then
+    echo "$pac is not installed"
+    curl -LO https://github.com/BurntSushi/ripgrep/releases/download/12.1.1/ripgrep_12.1.1_amd64.deb
+    sudo dpkg -i ripgrep_12.1.1_amd64.deb
+    rm ripgrep_12.1.1_amd64.deb
+  fi
 }
 
 config_zsh() {
