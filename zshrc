@@ -165,8 +165,8 @@ function drmi() {
   docker images | sed 1d | fzf -q "$1" --no-sort -m --tac | awk '{ print $3 }' | xargs -r docker rmi
 }
 
-
 # #################
 # EXTRAS
 # #################
+export PATH="/usr/local/go/bin:$PATH"
 export BAT_THEME="Dracula"
