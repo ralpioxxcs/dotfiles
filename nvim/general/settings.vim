@@ -33,6 +33,8 @@ set nowrapscan              " 찾기 파일 맨 끝 도달시, 계속하여 찾�
 set guifont=Hack\ Nerd\ Font " 폰트 설정
 set ignorecase              " 검색시 대소문자 구별 X
 
+set termguicolors
+
 " 파일 열기 마지막 부분 저장
 if has("autocmd")
 " When editing a file, always jump to the last cursor position
