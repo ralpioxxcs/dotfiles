@@ -35,6 +35,8 @@ ZSH_THEME="agnoster"
 # #################
 # CONFIG
 # #################
+if [[ $TERM == xterm ]]; then TERM=xterm-256color; fi
+
 # custom aliases
 [[ -f "$HOME/.aliases" ]] && source "$HOME/.aliases"
 
