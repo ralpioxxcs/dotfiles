@@ -18,7 +18,6 @@ colorscheme dracula
 "let g:dracula_undercurl = 1
 "let g:dracula_inverse = 1
 "let g:dracula_colorterm= 1
-highlight Normal ctermbg=None
 
 "-------------------------------------------------------
 " Hybrid Theme

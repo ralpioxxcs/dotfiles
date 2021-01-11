@@ -170,5 +170,6 @@ function drmi() {
 # #################
 # EXTRAS
 # #################
-export PATH="/usr/local/go/bin:$PATH"
 export BAT_THEME="Dracula"
+export GOPATH=$HOME/gowork
+export PATH="$GOPATH/bin:$PATH"
