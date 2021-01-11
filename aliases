@@ -67,3 +67,8 @@ alias reload="exec ${SHELL} -l"
 
 # Print each PATH entry on a separate line
 alias path='echo -e ${PATH//:/\\n}'
+
+## functions
+rmv() {
+  rm -rv "$S1" | pv -l -s $( du -a "$S1" | wc -l ) > /dev/null
+}
