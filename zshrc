@@ -104,8 +104,10 @@ source "${ZSH}/oh-my-zsh.sh"
 # usage : dzip [folder name]
 dzip() {
   if [[ -d $1/.git ]]; then
+    echo "git exist"
     zip -r $1.zip $1/* $1/.git
   else
+    echo "git not"
     zip -r $1.zip $1/*
   fi
 }
@@ -181,6 +183,10 @@ function drmi() {
 # #################
 # EXTRAS
 # #################
-export BAT_THEME="Dracula"
 export GOPATH=$HOME/gowork
-export PATH="$GOPATH/bin:$PATH"
+export GOROOT=/usr/local/go
+export GOBIN=$GOPATH/bin
+
+export BAT_THEME="Dracula"
+export PATH=$PATH:$GOPATH
+export PATH=$PATH:$GOROOT/bin
