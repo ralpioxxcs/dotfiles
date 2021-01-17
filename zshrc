@@ -99,6 +99,17 @@ source "${ZSH}/oh-my-zsh.sh"
 # #################
 # FUNCTIONS
 # #################
+
+# zip all files (include .git) in directory recursively
+# usage : dzip [folder name]
+dzip() {
+  if [[ -d $1/.git ]]; then
+    zip -r $1.zip $1/* $1/.git
+  else
+    zip -r $1.zip $1/*
+  fi
+}
+
 gitzip() {
   git archive -o $(basename $PWD).zip HEAD
 }
