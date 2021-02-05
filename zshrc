@@ -147,7 +147,7 @@ miniprompt() {
   PS1="\[\e[38;5;168m\]$ \[\e[0m\]"
 }
 
-# tmux
+# kill tmux sessions
 tmuxkillf () {
   local sessions
   sessions="$(tmux ls|fzf --exit-0 --multi)"  || return $?
@@ -161,7 +161,7 @@ tmuxkillf () {
   done
 }
 
-# docker
+# just display docker container id
 fb() {
   local cid
   cid=$(docker ps -a | sed 1d | fzf -1 -q "$1" | awk '{print $1}')
@@ -169,7 +169,7 @@ fb() {
   [ -n "$cid" ] && docker start "$cid" && docker attach "$cid"
 }
 
-# docker
+# stop running docker container
 ds() {
   local cid
   cid=$(docker ps | sed 1d | fzf -q "$1" | awk '{print $1}')
