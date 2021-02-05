@@ -180,6 +180,10 @@ function drmi() {
   docker images | sed 1d | fzf -q "$1" --no-sort -m --tac | awk '{ print $3 }' | xargs -r docker rmi
 }
 
+function usage() {
+  du -hs * .* | sort -h
+}
+
 # #################
 # EXTRAS
 # #################
