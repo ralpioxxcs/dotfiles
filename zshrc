@@ -162,25 +162,28 @@ tmuxkillf () {
 }
 
 # docker
-function fb() {
+fb() {
   local cid
   cid=$(docker ps -a | sed 1d | fzf -1 -q "$1" | awk '{print $1}')
 
   [ -n "$cid" ] && docker start "$cid" && docker attach "$cid"
 }
 
-function ds() {
+# docker
+ds() {
   local cid
   cid=$(docker ps | sed 1d | fzf -q "$1" | awk '{print $1}')
 
   [ -n "$cid" ] && docker stop "$cid"
 }
 
-function drmi() {
+# remove docker images
+drmi() {
   docker images | sed 1d | fzf -q "$1" --no-sort -m --tac | awk '{ print $3 }' | xargs -r docker rmi
 }
 
-function usage() {
+# display disk usage ascending sorted
+usage() {
   du -hs * .* | sort -h
 }
 
