@@ -42,3 +42,6 @@ if has("autocmd")
   \ exe "normal g'\"" |
   \ endif
 endif
+
+au BufNewFile,BufRead *.cu set ft=cuda
+au BufNewFile,BufRead *.cuh set ft=cuda
