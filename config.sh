@@ -168,13 +168,28 @@ config_golang() {
     echo >&2 "go not installed";
     wget https://dl.google.com/go/go${go_ver}.linux-amd64.tar.gz
     sudo tar -C /usr/local -xzf go${go_ver}.linux-amd64.tar.gz
-    go version
   else
     local cur_ver=`go version | { read _ _ v _; echo ${v#go}; }`
+    local cur_ver_major=`go version | { read _ _ v _; echo ${v#go}; } | cut -d. -f2`
+    local go_ver_major=`echo ${go_ver} | cut -d. -f2`
     echo "go is already installed (current version : ${cur_ver})"
+
+    if [ ${cur_ver_major} -le ${go_ver_major} ]; then
+      if [ -d "/usr/local/go" ]; then
+        read -p "remove pre installed go directory (y/n)" yn
+        case $yn in
+          [Yy]* ) sudo rm -rf /usr/local/go
+        esac
+      fi
+      wget https://dl.google.com/go/go${go_ver}.linux-amd64.tar.gz
+      sudo tar -C /usr/local -xzf go${go_ver}.linux-amd64.tar.gz
+    fi
   fi
 
-  mkdir -p $HOME/gowork
+  go version
+  mkdir -p $HOME/gowork/pkg
+  mkdir -p $HOME/gowork/src
+  mkdir -p $HOME/gowork/bin
   export PATH=$PATH:/usr/local/go/bin
   export GOROOT=/usr/local/go
   export GOPATH=$HOME/gowork
