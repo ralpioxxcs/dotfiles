@@ -120,7 +120,9 @@ config_zsh() {
     chsh -c /usr/bin/zsh
   fi
 
+  # copy dotfile
   cp zshrc $HOME/.zshrc
+  cp aliases $HOME/.aliases
 
   # oh-my-zsh configuration
   if [ ! -d "$HOME/.oh-my-zsh" ]; then
@@ -158,6 +160,26 @@ config_tmux() {
   ~/.tmux/plugins/tpm/scripts/install_plugins.sh
 }
 
+config_golang() {
+  local go_ver=1.15.8
+
+  if ! command -v go &> /dev/null
+  then
+    echo >&2 "go not installed";
+    wget https://dl.google.com/go/go${go_ver}.linux-amd64.tar.gz
+    sudo tar -C /usr/local -xzf go${go_ver}.linux-amd64.tar.gz
+    go version
+  else
+    local cur_ver=`go version | { read _ _ v _; echo ${v#go}; }`
+    echo "go is already installed (current version : ${cur_ver})"
+  fi
+
+  mkdir -p $HOME/gowork
+  export PATH=$PATH:/usr/local/go/bin
+  export GOROOT=/usr/local/go
+  export GOPATH=$HOME/gowork
+}
+
 ##-------------------------------------------------------------------------##
 
 os_type=$(uname)
@@ -167,10 +189,11 @@ if [ "$os_type" == "Darwin" ]; then
   exit
 fi
 
-echo "Select dotfile which you want to apply"
+echo "Select configuration which you want to apply"
 echo "1) neovim"
 echo "2) zsh & oh-my-zsh"
 echo "3) tmux"
+echo "4) golang"
 read ans
 
 if [ "$ans" != "${ans#[1]}" ] ;then
@@ -179,4 +202,6 @@ elif [ "$ans" != "${ans#[2]}" ] ;then
   config_zsh
 elif [ "$ans" != "${ans#[3]}" ] ;then
   config_tmux
+elif [ "$ans" != "${ans#[4]}" ] ;then
+  config_golang
 fi
