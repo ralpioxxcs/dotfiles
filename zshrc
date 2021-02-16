@@ -187,6 +187,11 @@ usage() {
   du -hs * .* | sort -h
 }
 
+# tmux
+tattch() {
+  tmux attach-session -t "$S1"
+}
+
 # #################
 # EXTRAS
 # #################
