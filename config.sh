@@ -133,17 +133,39 @@ config_zsh() {
   fi
 
   # install plugins
-  # * syntax-highligting, autosuggestions, fxf
-  git clone https://github.com/zsh-users/zsh-syntax-highlighting.git ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-syntax-highlighting
-  git clone https://github.com/zsh-users/zsh-autosuggestions ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-autosuggestions
-  git clone --depth 1 https://github.com/junegunn/fzf.git ~/.fzf
-  ~/.fzf/install
+  # ---------------
+  # * completion, syntax-highligting, autosuggestions, fzf
+  if [ -d ~/.oh-my-zsh/plugins/zsh-completions ]; then
+    cd ~/.oh-my-zsh/plugins/zsh-completions && git pull
+  else
+    git clone https://github.com/zsh-users/zsh-completions.git ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-completions
+  fi
+
+
+  if [ -d ~/.oh-my-zsh/plugins/zsh-autosuggestions ]; then
+    cd ~/.oh-my-zsh/plugins/zsh-autosuggestions && git pull
+  else
+    git clone https://github.com/zsh-users/zsh-syntax-highlighting.git ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-syntax-highlighting
+  fi
+
+  if [ -d ~/.oh-my-zsh/plugins/zsh-autosuggestions ]; then
+    cd ~/.oh-my-zsh/plugins/zsh-autosuggestions && git pull
+  else
+    git clone https://github.com/zsh-users/zsh-autosuggestions ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-autosuggestions
+  fi
+
+  if [ -d ~/.fzf ]; then
+    cd ~/.fzf && git pull
+  else
+    git clone --depth 1 https://github.com/junegunn/fzf.git ~/.fzf
+    ~/.fzf/install
+  fi
+  #----------
 
   cp agnoster.zsh-theme ${ZSH}/themes
 
   # source ~/.zshrc
   echo -e "\nSudo access is needed to change default shell\n"
-
   if chsh -s $(which zsh) && /bin/zsh -i -c upgrade_oh_my_zsh; then
     echo -e "Installation Successful, exit terminal and enter a new session"
   else
