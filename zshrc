@@ -105,7 +105,12 @@ source "${ZSH}/oh-my-zsh.sh"
 dzip() {
   if [[ -d $1/.git ]]; then
     echo "git exist"
-    zip -r $1.zip $1/* $1/.git
+    if [[ -d $1/build ]]; then
+      echo "build exist"
+      zip -r $1.zip $1/* $1/.git -x $1/build/\*
+    else
+      zip -r $1.zip $1/* $1/.git
+    fi
   else
     echo "git not"
     zip -r $1.zip $1/*

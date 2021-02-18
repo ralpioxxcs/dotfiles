@@ -6,13 +6,10 @@
       "rootPatterns": [".ccls", "compile_commands.json"],
       "initializationOptions": {
         "cache": {
-          "directory": ".ccls-cache"
+          "directory": "/tmp/ccls-cache"
         },
         "client": {
           "snippetSupport" : true
-        },
-        "clang": {
-          "resourceDir": "/usr/local/clang/9.0.0"
         },
         "compilationDatabaseDirectory": "./build/"
       }
