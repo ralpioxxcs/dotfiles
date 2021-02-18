@@ -126,13 +126,30 @@ config_zsh() {
 
   # oh-my-zsh configuration
   if [ ! -d "$HOME/.oh-my-zsh" ]; then
-    sh -c "$(curl -fsSL https://raw.githubusercontent.com/robbyrussell/oh-my-zsh/master/tools/install.sh)"
+    echo -e "oh-my-zsh is not installed\n"
+    git clone --depth=1 git://github.com/robbyrussell/oh-my-zsh.git ~/.oh-my-zsh
+  else
+   echo -e "oh-my-zsh is already installed\n"
   fi
+
+  # install plugins
+  # * syntax-highligting, autosuggestions, fxf
   git clone https://github.com/zsh-users/zsh-syntax-highlighting.git ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-syntax-highlighting
   git clone https://github.com/zsh-users/zsh-autosuggestions ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-autosuggestions
   git clone --depth 1 https://github.com/junegunn/fzf.git ~/.fzf
   ~/.fzf/install
-  cp agnoster.zsh-theme $ZSH/themes
+
+  cp agnoster.zsh-theme ${ZSH}/themes
+
+  # source ~/.zshrc
+  echo -e "\nSudo access is needed to change default shell\n"
+
+  if chsh -s $(which zsh) && /bin/zsh -i -c upgrade_oh_my_zsh; then
+    echo -e "Installation Successful, exit terminal and enter a new session"
+  else
+    echo -e "Something is wrong"
+  fi
+
 }
 
 config_tmux() {
