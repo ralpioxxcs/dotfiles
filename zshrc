@@ -197,6 +197,11 @@ tattch() {
   tmux attach-session -t "$S1"
 }
 
+# touch all files recursively current directory
+touchall {
+  find . -type f -exec touch {} +
+}
+
 # #################
 # EXTRAS
 # #################
