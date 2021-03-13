@@ -198,7 +198,7 @@ tattch() {
 }
 
 # touch all files recursively current directory
-touchall {
+touchall() {
   find . -type f -exec touch {} +
 }
 
