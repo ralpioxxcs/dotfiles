@@ -4,7 +4,14 @@ let mapleader = ","
 
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""
-" [FZF]
+" [NERDTree]
+nmap <C-e> :NERDTreeToggle<CR>
+nmap <M-e> :NERDTreeFocus<CR>
+
+" [Tagbar]
+nmap <F8> :TagbarToggle<CR>
+
+" [Fzf]
 nnoremap <C-p> :Files<Cr>
 nnoremap <C-f> :Rg<Cr>
 nnoremap <C-b> <b> :Buffers<Cr>
