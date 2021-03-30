@@ -202,6 +202,14 @@ touchall() {
   find . -type f -exec touch {} +
 }
 
+# xauth
+# equivalent -> (xauth -f ~/.Xauthority list | tail -1)
+xlist() {
+  local num
+  if [ -z "$1" ]; then num=10; else num=$1; fi
+  xauth list | awk "/unix:${num}/"
+}
+
 # #################
 # EXTRAS
 # #################
