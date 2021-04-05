@@ -54,6 +54,7 @@ config_neovim() {
   fi
 
   if [ -d "$HOME/.config/nvim" ]; then
+    while true; do
     read -p "neovim config folder is already existed. overwrite it? (y/n)" yn
     case $yn in
       [Yy]* ) 
@@ -64,7 +65,10 @@ config_neovim() {
             https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
                       nvim -c "PlugInstall" -c "qall"
         fi
+      [Nn]* ) break;;
+      * ) echo "Please answer yes or no.";;
     esac
+    done
   else
     mkdir -p $HOME/.config/
     rsync -azvh nvim $HOME/.config/
@@ -186,14 +190,17 @@ config_tmux() {
 
   local file=".tmux.conf"
   if [ -f "$HOME/$file" ]; then
+    while true; do
     read -p "$file is already existed. overwrite it? (y/n)" yn
     case $yn in
       [Yy]* ) cp tmux.conf $HOME/.tmux.conf
+      [Nn]* ) return 1;;
+      * ) echo "Please answer yes or no.";;
     esac
+    done
   else
     cp tmux.conf $HOME/.tmux.conf
   fi
-
 
   git clone https://github.com/tmux-plugins/tpm ~/.tmux/plugins/tpm
   ~/.tmux/plugins/tpm/scripts/install_plugins.sh
@@ -215,15 +222,20 @@ config_golang() {
 
     if [ ${cur_ver_major} -le ${go_ver_major} ]; then
       if [ -d "/usr/local/go" ]; then
+        while true; do
         read -p "remove pre installed go directory (y/n)" yn
         case $yn in
-          [Yy]* ) sudo rm -rf /usr/local/go
+          [Yy]* ) sudo rm -rf /usr/local/go; break;;
+          [Nn]* ) return 1;;
+          * ) echo "Please answer yes or no.";;
         esac
+        done
       fi
-      wget https://dl.google.com/go/go${go_ver}.linux-amd64.tar.gz
-      sudo tar -C /usr/local -xzf go${go_ver}.linux-amd64.tar.gz
     fi
   fi
+  
+  wget https://dl.google.com/go/go${go_ver}.linux-amd64.tar.gz;
+  sudo tar -C /usr/local -xzf go${go_ver}.linux-amd64.tar.gz;
 
   go version
   mkdir -p $HOME/gowork/pkg
@@ -243,19 +255,21 @@ if [ "$os_type" == "Darwin" ]; then
   exit
 fi
 
-echo "Select configuration which you want to apply"
-echo "1) neovim"
-echo "2) zsh & oh-my-zsh"
-echo "3) tmux"
-echo "4) golang"
-read ans
+while true; do
+  echo "Select configuration which you want to apply"
+  echo "1) neovim"
+  echo "2) zsh & oh-my-zsh"
+  echo "3) tmux"
+  echo "4) golang"
+  read ans
 
-if [ "$ans" != "${ans#[1]}" ] ;then
-  config_neovim
-elif [ "$ans" != "${ans#[2]}" ] ;then
-  config_zsh
-elif [ "$ans" != "${ans#[3]}" ] ;then
-  config_tmux
-elif [ "$ans" != "${ans#[4]}" ] ;then
-  config_golang
-fi
+  if [ "$ans" != "${ans#[1]}" ] ;then
+    config_neovim
+  elif [ "$ans" != "${ans#[2]}" ] ;then
+    config_zsh
+  elif [ "$ans" != "${ans#[3]}" ] ;then
+    config_tmux
+  elif [ "$ans" != "${ans#[4]}" ] ;then
+    config_golang
+  fi
+done

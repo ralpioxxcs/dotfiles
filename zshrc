@@ -78,7 +78,7 @@ export ZSH=$HOME/.oh-my-zsh
 plugins=(
   # git
   git
-  git-prompt
+  #git-prompt
 
   # cli support
   fzf
