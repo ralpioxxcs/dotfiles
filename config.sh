@@ -65,6 +65,7 @@ config_neovim() {
             https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
                       nvim -c "PlugInstall" -c "qall"
         fi
+        break;;
       [Nn]* ) break;;
       * ) echo "Please answer yes or no.";;
     esac
@@ -193,7 +194,7 @@ config_tmux() {
     while true; do
     read -p "$file is already existed. overwrite it? (y/n)" yn
     case $yn in
-      [Yy]* ) cp tmux.conf $HOME/.tmux.conf
+      [Yy]* ) cp tmux.conf $HOME/.tmux.conf; break;;
       [Nn]* ) return 1;;
       * ) echo "Please answer yes or no.";;
     esac
@@ -261,6 +262,7 @@ while true; do
   echo "2) zsh & oh-my-zsh"
   echo "3) tmux"
   echo "4) golang"
+  echo "5) exit"
   read ans
 
   if [ "$ans" != "${ans#[1]}" ] ;then
@@ -271,5 +273,9 @@ while true; do
     config_tmux
   elif [ "$ans" != "${ans#[4]}" ] ;then
     config_golang
+  elif [ "$ans" != "${ans#[5]}" ] ;then
+    exit 1
+  else
+    echo "Please answer number"
   fi
 done
