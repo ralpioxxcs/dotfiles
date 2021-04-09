@@ -212,9 +212,7 @@ config_golang() {
 
   if ! command -v go &> /dev/null
   then
-    echo >&2 "go not installed";
-    wget https://dl.google.com/go/go${go_ver}.linux-amd64.tar.gz
-    sudo tar -C /usr/local -xzf go${go_ver}.linux-amd64.tar.gz
+    echo >&2 "go is not installed";
   else
     local cur_ver=`go version | { read _ _ v _; echo ${v#go}; }`
     local cur_ver_major=`go version | { read _ _ v _; echo ${v#go}; } | cut -d. -f2`
@@ -235,9 +233,14 @@ config_golang() {
     fi
   fi
   
-  wget https://dl.google.com/go/go${go_ver}.linux-amd64.tar.gz;
-  sudo tar -C /usr/local -xzf go${go_ver}.linux-amd64.tar.gz;
+  wget https://dl.google.com/go/go${go_ver}.linux-amd64.tar.gz
+  sudo tar -C /usr/local -xzf go${go_ver}.linux-amd64.tar.gz
+  rm go${go_ver}.linux-amd64.tar.gz
 
+  echo "export PATH=$PATH:/usr/local/go/bin" >> ${HOME}/.profile
+  echo -e "command this line -> \"source ~/.profile\""
+
+  source $HOME/.profile
   go version
   mkdir -p $HOME/gowork/pkg
   mkdir -p $HOME/gowork/src
