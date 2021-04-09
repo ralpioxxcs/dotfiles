@@ -177,6 +177,17 @@ config_zsh() {
     echo -e "Something is wrong"
   fi
 
+  echo -e "n"
+    while true; do
+    read -p "Do you want to install Nerd-Font? (Hack) (y/n)" yn
+    case $yn in
+      [Yy]* ) git clone --depth=1 https://github.com/ryanoasis/nerd-fonts.git
+	      nerd-fonts/install.sh Hack; break;;
+      [Nn]* ) return 1;;
+      * ) echo "Please answer yes or no.";;
+    esac
+    done
+
 }
 
 config_tmux() {
