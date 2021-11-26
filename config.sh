@@ -18,18 +18,57 @@ COLOR_LIGHT_BLUE='\033[1;34m'
 COLOR_LIGHT_PURPLE='\033[1;35m'
 COLOR_LIGHT_CYAN='\033[1;36m'
 COLOR_WHITE='\033[1;37m'
-################################
+
+################################################################
+
+main() {
+
+os_type=$(uname)
+
+printf "${COLOR_GREEN}# OS Type : ${os_type}${COLOR_NONE}\n"
+
+while true; do
+  echo "Select configuration which you want to apply"
+  echo "1) neovim"
+  echo "2) zsh & oh-my-zsh"
+  echo "3) tmux"
+  echo "4) golang"
+  echo "5) exit"
+  read ans
+
+  if [ "$ans" != "${ans#[1]}" ] ;then
+    config_neovim
+  elif [ "$ans" != "${ans#[2]}" ] ;then
+    config_zsh
+  elif [ "$ans" != "${ans#[3]}" ] ;then
+    config_tmux
+  elif [ "$ans" != "${ans#[4]}" ] ;then
+    config_golang
+  elif [ "$ans" != "${ans#[5]}" ] ;then
+    exit 1
+  else
+    echo "Please answer number"
+  fi
+done
+}
+
+################################################################
 
 # check if package is installed
 check_package_installed() {
-  local value=$1
-  REQUIRED_PKG=${value}
-  PKG_OK=$(dpkg-query -W --showformat='${Status}\n' $REQUIRED_PKG | grep "install ok installed")
-  echo Checking for $REQUIRED_PKG: $PKG_OK
-  if [ "" = "$PKG_OK" ]; then
-    retVal="False"
-  else
+  pkgName=${1}
+  if [ ${os_type} == "Darwin" ]; then
+    ok=$(brew ls --versions ${pkgName})
+  elif [ ${os_type} == "Linux" ]; then
+    ok=$(dpkg-query -W --showformat='${Status}\n' ${pkgName} | grep "install ok installed")
+  fi
+
+  if [ -n "${ok}" ]; then
+    printf "${COLOR_GREEN}${pkgName} is installed${COLOR_NONE}\n"
     retVal="True"
+  else
+    printf "${COLOR_RED}${pkgName} is not installed${COLOR_NONE}\n"
+    retVal="False"
   fi
 }
 
@@ -108,6 +147,7 @@ config_neovim() {
     echo "$pac is already installed"
   elif [ "${retVal}" == "False" ]; then
     echo "$pac is not installed"
+    
     curl -LO https://github.com/BurntSushi/ripgrep/releases/download/12.1.1/ripgrep_12.1.1_amd64.deb
     sudo dpkg -i ripgrep_12.1.1_amd64.deb
     rm ripgrep_12.1.1_amd64.deb
@@ -182,7 +222,7 @@ config_zsh() {
     read -p "Do you want to install Nerd-Font? (Hack) (y/n)" yn
     case $yn in
       [Yy]* ) git clone --depth=1 https://github.com/ryanoasis/nerd-fonts.git
-	      nerd-fonts/install.sh Hack; break;;
+        nerd-fonts/install.sh Hack; break;;
       [Nn]* ) return 1;;
       * ) echo "Please answer yes or no.";;
     esac
@@ -263,33 +303,4 @@ config_golang() {
 
 ##-------------------------------------------------------------------------##
 
-os_type=$(uname)
-
-if [ "$os_type" == "Darwin" ]; then
-  echo "not support osx"
-  exit
-fi
-
-while true; do
-  echo "Select configuration which you want to apply"
-  echo "1) neovim"
-  echo "2) zsh & oh-my-zsh"
-  echo "3) tmux"
-  echo "4) golang"
-  echo "5) exit"
-  read ans
-
-  if [ "$ans" != "${ans#[1]}" ] ;then
-    config_neovim
-  elif [ "$ans" != "${ans#[2]}" ] ;then
-    config_zsh
-  elif [ "$ans" != "${ans#[3]}" ] ;then
-    config_tmux
-  elif [ "$ans" != "${ans#[4]}" ] ;then
-    config_golang
-  elif [ "$ans" != "${ans#[5]}" ] ;then
-    exit 1
-  else
-    echo "Please answer number"
-  fi
-done
+main "$@"; exit
