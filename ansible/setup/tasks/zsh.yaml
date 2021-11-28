@@ -1,0 +1,77 @@
+---
+# - name: Update homebrew
+#   community.general.homebrew:
+#     update_homebrew: true
+#   when: ansible_facts['os_family'] == 'Darwin'
+
+# - name: Install zsh on OSX
+#   community.general.homebrew:
+#     pkg: 
+#       - zsh
+#     state: present 
+#   when: ansible_facts['os_family'] == 'Darwin'
+
+- name: Install zsh on Ubuntu
+  apt:
+    name: zsh
+    state: present
+  when: ansible_facts['os_family'] == 'Ubuntu'
+
+- name: Check if folder is empty before proceeding
+  find:
+    paths: '~/.oh-my-zsh'
+  register: filesFound
+
+- name: Install oh my zsh
+  git:
+    repo: https://github.com/ohmyzsh/ohmyzsh.git
+    dest: ~/.oh-my-zsh
+    version: latest
+    depth: 1
+  when: filesFound.matched == 0
+
+- debug:
+    msg: 'oh my zsh directory already exist'
+
+- name: Copy zsh config file
+  copy:
+    src: zshrc
+    dest: ~/.zshrc
+    mode: 0644
+
+- name: Install spaceship prompt
+  git:
+    repo: https://github.com/spaceship-prompt/spaceship-prompt.git
+    dest: ~/.oh-my-zsh/custom/themes/spaceship-prompt
+    depth: 1
+
+- name: Apply spaceship theme
+  file:
+    src: ~/.oh-my-zsh/custom/themes/spaceship-prompt/spaceship.zsh-theme
+    dest: ~/.oh-my-zsh/custom/themes/spaceship.zsh-theme
+    state: link
+
+- name: Install zsh-syntax-highlighting plugin
+  git:
+    repo: https://github.com/zsh-users/zsh-syntax-highlighting.git
+    dest: ~/.oh-my-zsh/custom/plugins/zsh-syntax-highlighting
+
+- name: Install zsh-autosuggestions plugin
+  git:
+    repo: https://github.com/zsh-users/zsh-autosuggestions
+    dest: ~/.oh-my-zsh/custom/plugins/zsh-autosuggestions
+
+- name: Install zsh-completions plugin
+  git:
+    repo: https://github.com/zsh-users/zsh-completions
+    dest: ~/.oh-my-zsh/custom/plugins/zsh-completions
+
+- name: Install git-fuzzy plugin
+  git:
+    repo: https://github.com/bigH/git-fuzzy.git
+    dest: ~/.oh-my-zsh/custom/plugins/git-fuzzy
+
+- name: Install fzf-tab plugin
+  git:
+    repo: https://github.com/Aloxaf/fzf-tab
+    dest: ~/.oh-my-zsh/custom/plugins/fzf-tab

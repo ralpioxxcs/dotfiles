@@ -187,8 +187,8 @@ config_zsh() {
   fi
 
 
-  if [ -d ~/.oh-my-zsh/plugins/zsh-autosuggestions ]; then
-    cd ~/.oh-my-zsh/plugins/zsh-autosuggestions && git pull
+  if [ -d ~/.oh-my-zsh/plugins/zsh-syntax-highlighting ]; then
+    cd ~/.oh-my-zsh/plugins/zsh-syntax-highlighting && git pull
   else
     git clone https://github.com/zsh-users/zsh-syntax-highlighting.git ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-syntax-highlighting
   fi

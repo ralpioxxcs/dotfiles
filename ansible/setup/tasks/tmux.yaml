@@ -1,0 +1,30 @@
+---
+- name: Install tmux on OSX
+  community.general.homebrew:
+    name: tmux
+    state: latest
+  when: ansible_facts['os_family'] == 'Darwin'
+
+- name: Install tmux on Ubuntu
+  apt:
+    name: zsh
+    state: present
+  when: ansible_facts['os_family'] == 'Ubuntu'
+
+- name: Create ~/.config/tmux directory
+  file:
+    path: ~/.config/tmux
+    state: directory
+    mode: 0644
+
+- name: Install tmux plugin manager
+  git:
+    repo: https://github.com/tmux-plugins/tpm
+    dest: ~/.tmux/plugins/tpm
+    version: latest
+
+- name: Copy tmux config file
+  copy:
+    src: tmux.conf
+    dest: ~/.config/tmux/tmux.conf
+    mode: 0644
