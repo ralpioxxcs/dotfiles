@@ -1,87 +1,40 @@
-# #################
-# ENV
-# #################
-# Encoding stuff for the terminal
+# Path to your oh-my-zsh installation.
+export ZSH=$HOME/.oh-my-zsh
+
+# [[Env]]
 export LANG=en_US.UTF-8
 export LC_ALL=en_US.UTF-8
 
-if [[ -z "$XDG_DATA_HOME" ]]; then
-    export XDG_DATA_HOME="$HOME/.local/share"
-fi
+export BAT_THEME="Dracula"
 
-if [[ -z "$XDG_CONFIG_HOME" ]]; then
-    export XDG_CONFIG_HOME="$HOME/.config"
-fi
+export GOROOT=/usr/local/go
+export PATH=${PATH}:${GOROOT}/bin:${ZSH_CUSTOM}/plugins/git-fuzzy/bin:${HOME}/.local/bin
+export PATH=${PATH}:$(go env GOPATH)/bin
+export PATH=${PATH}:${HOME}/.cargo/bin
+source ${HOME}/.cargo/env
+export PATH=${PATH}:/usr/local/cuda/bin
+export PATH=${PATH}:${HOME}/.rbenv/bin
 
-if [[ -z "$XDG_CACHE_HOME" ]]; then
-    export XDG_CACHE_HOME="$HOME/.cache"
-fi
+eval "$(rbenv init -)"
+source $(dirname $(gem which colorls))/tab_complete.sh
 
-if [[ -z "$XDG_DATA_DIRS" ]]; then
-    export XDG_DATA_DIRS="/usr/local/share:/usr/share"
-fi
+test -r ~/.dir_colors && eval $(dircolors ~/.dir_colors)
 
-if [[ -z "$XDG_CONFIG_DIRS" ]]; then
-    export XDG_CONFIG_DIRS="/etc/xdg"
-  else
-      export XDG_CONFIG_DIRS="/etc/xdg:$XDG_CONFIG_DIRS"
-fi
+# Zsh variables
+ZSH_THEME="spaceship"
+CASE_SENSITIVE="true"
+HYPHEN_INSENSITIVE="true"
+ENABLE_CORRECTION="true"
+COMPLETION_WAITING_DOTS="true"
+HIST_STAMPS="yyyy-mm-dd"
 
-# #################
-# THEME
-# #################
-ZSH_THEME="agnoster"
-
-# #################
-# CONFIG
-# #################
-if [[ $TERM == xterm ]]; then TERM=xterm-256color; fi
-
-# custom aliases
-[[ -f "$HOME/.aliases" ]] && source "$HOME/.aliases"
-
-# fzf
-[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
-
-# git
-#autoload -Uz vcs_info
-#zstyle ":vcs_info:*" enable git
-#zstyle ":vcs_info:(git*):*" get-revision true
-#zstyle ":vcs_info:(git*):*" check-for-changes true
-
-#local _branch="%c%u%m %{$fg[green]%}%b%{$reset_color%}"
-#local _repo="%{$fg[green]%}%r %{$fg[yellow]%}%{$reset_color%}"
-#local _revision="%{$fg[yellow]%}%.7i%{$reset_color%}"
-#local _action="%{$fg[red]%}%a%{$reset_color%}"
-#zstyle ":vcs_info:*" stagedstr "%{$fg[yellow]%}✓%{$reset_color%}"
-#zstyle ":vcs_info:*" unstagedstr "%{$fg[red]%}✗%{$reset_color%}"
-#zstyle ":vcs_info:git*" formats "$_branch:$_revision - $_repo"
-#zstyle ":vcs_info:git*" actionformats "$_branch:$_revision:$_action - $_repo"
-#zstyle ':vcs_info:git*+set-message:*' hooks git-stash
-
-#function +vi-git-stash() {
-#  if [[ -s "${hook_com[base]}/.git/refs/stash" ]]; then
-#        hook_com[misc]="%{$fg_bold[grey]%}~%{$reset_color%}"
-#  fi
-#}
-
-# precmd() {
-#  vcs_info
-#}
-
-# #################
-# OH-MY-ZSH
-# #################
-export ZSH=$HOME/.oh-my-zsh
-
-# plugins
+# Zsh plugins
 plugins=(
-  # git
   git
-  #git-prompt
 
   # cli support
   fzf
+  fzf-tab
   last-working-dir 
   zsh-autosuggestions
   zsh-syntax-highlighting 
@@ -93,13 +46,58 @@ plugins=(
   docker-compose
 )
 
+
+#-----------------------------------------------
+
+# [[Configs]]
+if [[ $TERM == xterm ]]; then 
+  TERM=xterm-256color; 
+fi
+
+# custom aliases
+if [[ -f "$HOME/.aliases" ]]; then
+  source "$HOME/.aliases"
+fi
+
+# fzf
+if [[ -f ~/.fzf.zsh ]]; then
+  source ~/.fzf.zsh
+fi
+
+# [[Spaceship prompt config]]
+SPACESHIP_PROMPT_ORDER=(
+#  time          # Time stamps section
+  user          # Username section
+  dir           # Current directory section
+  host          # Hostname section
+  git           # Git section (git_branch + git_status)
+  package       # Package version
+  golang        # Go section
+  docker        # Docker section
+  vi_mode       # Vi-mode indicator
+#  jobs          # Background jobs indicator
+#  exit_code     # Exit code section
+  line_sep      # Line break
+  char          # Prompt character
+)
+
+SPACESHIP_RPROMPT_ORDER=(
+    jobs
+    exit_code
+)
+
+# SPACESHIP_TIME_SHOW=true
+# SPACESHIP_USER_SHOW=always
+SPACESHIP_CHAR_SYMBOL=""
+SPACESHIP_CHAR_SUFFIX=" "
+SPACESHIP_EXIT_CODE_SHOW=true
+
 # actually load
 source "${ZSH}/oh-my-zsh.sh"
 
-# #################
-# FUNCTIONS
-# #################
+#-----------------------------------------------
 
+# [[Functions]]
 # zip all files (include .git) in directory recursively
 # usage : dzip [folder name]
 dzip() {
@@ -209,14 +207,3 @@ xlist() {
   if [ -z "$1" ]; then num=10; else num=$1; fi
   xauth list | awk "/unix:${num}/"
 }
-
-# #################
-# EXTRAS
-# #################
-export GOPATH=$HOME/gowork
-export GOROOT=/usr/local/go
-export GOBIN=$GOPATH/bin
-
-export BAT_THEME="Dracula"
-export PATH=$PATH:$GOPATH
-export PATH=$PATH:$GOROOT/bin

@@ -42,6 +42,7 @@ Plug 'majutsushi/tagbar'
 
 " themes
 Plug 'dracula/vim'
+Plug 'arcticicestudio/nord-vim'
 
 " cpp plugins
 Plug 'octol/vim-cpp-enhanced-highlight'
