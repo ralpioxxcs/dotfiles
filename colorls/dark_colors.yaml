@@ -1,0 +1,47 @@
+# nord themed dark color settings for colorls
+#
+# Main Colors
+unrecognized_file: '#d08770' # Aurora - nord12
+recognized_file:   '#d8dee9' # Snow Storm - nord4
+executable_file:   '#8fbcbb' # Aurora - nord14
+dir:               '#b48ead' # Aurora - nord15
+
+# Link
+dead_link: '#bf616a'         # Aurora - nord11
+link:      '#5e81ac'         # Frost - nord10
+
+# Special Files
+socket:    '#8fbcbb'         # Aurora - nord14
+blockdev:  '#8fbcbb'         # Aurora - nord14
+chardev:   '#8fbcbb'         # Aurora - nord14
+
+# Access Modes
+write:     '#88c0d0'         # Fros - nord8
+read:      '#b48ead'         # Aurora - nord15
+exec:      '#5e81ac'         # Frost - nord10
+no_access: '#bf616a'         # Aurora - nord11
+
+# Age
+hour_old:    '#4c566a'       # Polar Night - nord3
+day_old:     '#434c5e'       # Polar Night - nord2
+no_modifier: '#2e3440'       # Polar Night - nord0
+
+# File Size
+file_large:  '#bf616a'       # Aurora - nord11
+file_medium: '#d08770'       # Aurora - nord12
+file_small:  '#8fbcbb'       # Aurora - nord14
+
+# Random
+report: '#8fbcbb'            # Aurora - nord14
+user:   '#5e81ac'            # Frost - nord10
+tree:   '#2e3440'            # Polar Night - nord0
+empty:  '#6272a4'            # Polar Night - nord2
+error:  '#bf616a'            # Aurora - nord11
+normal: '#d8dee9'            # Snow Storm - nord4
+
+# Git
+addition:     '#5e81ac'      # Frost - nord10
+modification: '#ebc88b'      # Aurora - nord13
+deletion:     '#bf616a'      # Aurora - nord11
+untracked:    '#d08770'      # Aurora - nord12
+unchanged:    '#8fbcbb'      # Aurora - nord14
