@@ -89,6 +89,7 @@ terminal() {
     clear
     echo "(1) zsh & oh-my-zsh"
     echo "(2) tmux"
+    echo "(3) lazygit"
     echo "(3) ${COLOR_RED}back${COLOR_WHITE}"
     read ans
 
@@ -97,6 +98,8 @@ terminal() {
     elif [ "$ans" != "${ans#[2]}" ]; then
       config_tmux
     elif [ "$ans" != "${ans#[3]}" ]; then
+      config_lazygit
+    elif [ "$ans" != "${ans#[4]}" ]; then
       break
     else
       echo "please answer number"
@@ -352,6 +355,25 @@ config_tmux() {
 
   git clone https://github.com/tmux-plugins/tpm ~/.tmux/plugins/tpm
   ~/.tmux/plugins/tpm/scripts/install_plugins.sh
+}
+
+config_lazygit() {
+  local pac="lazygit"
+  check_package_installed ${pac}
+  if [ "${retVal}" = "True" ]; then
+    echo "${pac} is already installed"
+  elif [ "${retVal}" == "False" ]; then
+    echo "${pac} is not installed"
+
+    LAZYGIT_VERSION=$(curl -s "https://api.github.com/repos/jesseduffield/lazygit/releases/latest" | grep -Po '"tag_name": "v\K[0-35.]+')
+
+    curl -Lo lazygit.tar.gz "https://github.com/jesseduffield/lazygit/releases/latest/download/lazygit_${LAZYGIT_VERSION}_Linux_x86_64.tar.gz"
+
+    sudo tar xf lazygit.tar.gz -C /usr/local/bin lazygit
+
+  fi
+
+  lazygit --version
 }
 
 config_golang() {

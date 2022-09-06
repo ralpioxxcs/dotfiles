@@ -1,0 +1,50 @@
+"Plug 'tpope/vim-commentary'
+"Plug 'terryma/vim-multiple-cursors'
+
+set hlsearch
+set incsearch
+set ignorecase
+set showmode
+set scrolloff=5
+set clipboard+=unnamed
+"set relativenumber
+"
+set surround
+set multiple-cursors
+set commentary
+set easymotion
+set NERDTree
+
+let mapleader=" "
+nmap <Leader>l <Plug>(easymotion-lineforward)
+nmap <Leader>j <Plug>(easymotion-j)
+nmap <Leader>k <Plug>(easymotion-k)
+nmap <Leader>h <Plug>(easymotion-linebackward)
+nmap <Leader>a <Plug>(easymotion-jumptoanywhere)
+
+nmap \f :NERDTreeFind<CR>
+
+nmap <C-n> <Plug>NextWholeOccurrence
+xmap <C-n> <Plug>NextWholeOccurrence
+
+" [Split]
+"vertical split
+nmap vs :vsplit<CR> 
+"horizontal split
+nmap hs :split<CR>  
+
+nmap <Leader>d <Action>(Debug)
+nmap \b <action>(ToggleLineBreakpoint)
+nmap <Tab>n <Action> NewFile
+nmap <Tab>f <Action> QuickFixes
+map ff <Action>(Find)
+map ii <Action>(ShowIntentionActions)
+
+nmap <Leader>= <Action>(ReformatCode)
+nmap <Leader>c <Action>(CommentByLineComment)
+
+sethandler <C-c> a:ide
+sethandler <C-v> a:ide
+sethandler <C-k> a:ide "for Zen mode (Ctrl K, Ctrl Z)
+
+nmap <Leader>si :source ~/.ideavimrc<CR>
