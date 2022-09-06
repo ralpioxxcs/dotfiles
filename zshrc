@@ -5,18 +5,20 @@ export ZSH=$HOME/.oh-my-zsh
 export LANG=en_US.UTF-8
 export LC_ALL=en_US.UTF-8
 
-export BAT_THEME="Dracula"
+#export BAT_THEME="Dracula"
 
 export GOROOT=/usr/local/go
 export PATH=${PATH}:${GOROOT}/bin:${ZSH_CUSTOM}/plugins/git-fuzzy/bin:${HOME}/.local/bin
 export PATH=${PATH}:$(go env GOPATH)/bin
-export PATH=${PATH}:${HOME}/.cargo/bin
-source ${HOME}/.cargo/env
-export PATH=${PATH}:/usr/local/cuda/bin
-export PATH=${PATH}:${HOME}/.rbenv/bin
 
-eval "$(rbenv init -)"
-source $(dirname $(gem which colorls))/tab_complete.sh
+#export PATH=${PATH}:${HOME}/.cargo/bin
+#source ${HOME}/.cargo/env
+
+export PATH=${PATH}:/usr/local/cuda/bin
+#export PATH=${PATH}:${HOME}/.rbenv/bin
+
+#eval "$(rbenv init -)"
+#source $(dirname $(gem which colorls))/tab_complete.sh
 
 test -r ~/.dir_colors && eval $(dircolors ~/.dir_colors)
 
@@ -74,7 +76,7 @@ SPACESHIP_PROMPT_ORDER=(
   package       # Package version
   golang        # Go section
   docker        # Docker section
-  vi_mode       # Vi-mode indicator
+#  vi_mode       # Vi-mode indicator
 #  jobs          # Background jobs indicator
 #  exit_code     # Exit code section
   line_sep      # Line break
