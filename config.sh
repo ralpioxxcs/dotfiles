@@ -20,6 +20,10 @@ COLOR_LIGHT_CYAN='\033[1;36m'
 COLOR_WHITE='\033[1;37m'
 
 ################################################################
+
+log_filename="log_$(date_+%y%m%d%H%M%S).txt"
+spin='-\|/'
+
 main() {
   os_type=$(uname)
 
@@ -28,12 +32,12 @@ main() {
 
   while true; do
     clear
-    echo "select categories"
-    echo "1) terminal"
-    echo "2) editors"
-    echo "3) languages"
-    echo "4) auto"
-    echo "5) exit"
+    echo "# select categories"
+    echo "[1] terminal"
+    echo "[2] editors"
+    echo "[3] languages"
+    echo "[4] auto"
+    echo "[5] exit"
     read ans
 
     if [ "$ans" != "${ans#[1]}" ]; then
@@ -57,7 +61,7 @@ check_preinstalled_packages() {
   prerequsite_pacakges=("curl", "zsh")
   echo "check preinstalled packages.."
 
-  sudo apt install -y curl wget
+  sudo apt install -y curl wget 2>&1 /dev/null
 }
 
 # check if package is installed
@@ -70,10 +74,10 @@ check_package_installed() {
   fi
 
   if [ -n "${ok}" ]; then
-    printf "${COLOR_GREEN}${pkgName} is installed${COLOR_NONE}\n"
+    #printf "${COLOR_GREEN}${pkgName} is installed${COLOR_NONE}\n"
     retVal="True"
   else
-    printf "${COLOR_RED}${pkgName} is not installed${COLOR_NONE}\n"
+    #printf "${COLOR_RED}${pkgName} is not installed${COLOR_NONE}\n"
     retVal="False"
   fi
 }
@@ -82,15 +86,30 @@ check_directory_is_exist() {
   dirName=${1}
 }
 
+apt_install_wrapper() {
+  packages=" "
+  for var in "$@"
+  do
+    packages+=" ${var}"
+  done
+  echo ${packages}
+  sudo apt install -y ${packages}
+}
+
+custom_install_wrapper() {
+  $0
+
+}
+
 ################################################################
 
 terminal() {
   while true; do
     clear
-    echo "(1) zsh & oh-my-zsh"
-    echo "(2) tmux"
-    echo "(3) lazygit"
-    echo "(3) ${COLOR_RED}back${COLOR_WHITE}"
+    echo -e "[1] zsh & oh-my-zsh"
+    echo -e "[2] tmux"
+    echo -e "[3] lazygit"
+    echo -e "[4] ${COLOR_DARK_GRAY}back${COLOR_NONE}"
     read ans
 
     if [ "$ans" != "${ans#[1]}" ]; then
@@ -260,59 +279,48 @@ config_zsh() {
     echo -e "oh-my-zsh is already installed\n"
   fi
 
-
   zsh_plugins=("zsh-completions" "zsh-syntax-highlighting" "zsh-autosuggestions", "spaceship-prompt", "fzf")
 
   # install plugins
+  # -- completion, syntax-highligting, autosuggestions, fzf
   #----------------------------------------------------------------------------------------
-  # * completion, syntax-highligting, autosuggestions, fzf
   if [ -d ~/.oh-my-zsh/plugins/zsh-completions ]; then
     cd ~/.oh-my-zsh/plugins/zsh-completions && git pull
   else
-    git clone https://github.com/zsh-users/zsh-completions.git ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-completions /dev/null 2>&1
+    git clone https://github.com/zsh-users/zsh-completions.git ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-completions 2>&1 /dev/null
   fi
 
   if [ -d ~/.oh-my-zsh/plugins/zsh-syntax-highlighting ]; then
     cd ~/.oh-my-zsh/plugins/zsh-syntax-highlighting && git pull
   else
-    git clone https://github.com/zsh-users/zsh-syntax-highlighting.git ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-syntax-highlighting
+    git clone https://github.com/zsh-users/zsh-syntax-highlighting.git ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-syntax-highlighting 2>&1 /dev/null
   fi
 
   if [ -d ~/.oh-my-zsh/plugins/zsh-autosuggestions ]; then
     cd ~/.oh-my-zsh/plugins/zsh-autosuggestions && git pull
   else
-    git clone https://github.com/zsh-users/zsh-autosuggestions ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-autosuggestions
+    git clone https://github.com/zsh-users/zsh-autosuggestions ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-autosuggestions 2>&1 /dev/null
   fi
 
   if [ -d ~/.oh-my-zsh/plugins/spaceship-prompt ]; then
     cd ~/.oh-my-zsh/plugins/spaceship-prompt && git pull
   else
-    git clone https://github.com/spaceship-prompt/spaceship-prompt.git "${ZSH_CUSTOM}/themes/spaceship-prompt" --depth=1
-    ln -s "${ZSH_CUSTOM}/themes/spaceship-prompt/spaceship.zsh-theme" "${ZSH_CUSTOM}/themes/spaceship.zsh-theme"
+    git clone https://github.com/spaceship-prompt/spaceship-prompt.git "${ZSH_CUSTOM}/themes/spaceship-prompt" --depth=1 2>&1 /dev/null
+    ln -s "${ZSH_CUSTOM}/themes/spaceship-prompt/spaceship.zsh-theme" "${ZSH_CUSTOM}/themes/spaceship.zsh-theme" 2>&1 /dev/null
   fi
-
 
   if [ -d ~/.fzf ]; then
     cd ~/.fzf && git pull
   else
-    git clone --depth 1 https://github.com/junegunn/fzf.git ~/.fzf
-    ~/.fzf/install
+    git clone --depth 1 https://github.com/junegunn/fzf.git ~/.fzf 2>&1 /dev/null
+    ~/.fzf/install 2>&1 /dev/null
   fi
-  #----------------------------------------------------------------------------------------
 
-  cp agnoster.zsh-theme ${ZSH}/themes
-
-  # source ~/.zshrc
-  echo -e "\nSudo access is needed to change default shell\n"
-  if chsh -s $(which zsh) && /bin/zsh -i -c upgrade_oh_my_zsh; then
-    echo -e "Installation Successful, exit terminal and enter a new session"
-  else
-    echo -e "Something is wrong"
-  fi
+  #cp agnoster.zsh-theme ${ZSH}/themes
 
   echo -e "n"
   while true; do
-    read -p "Do you want to install Nerd-Font? (Hack) (y/n)" yn
+    read -p "Do you want to install Nerd-Fonts? (Hack) (y/n)" yn
     case $yn in
     [Yy]*)
       git clone --depth=1 https://github.com/ryanoasis/nerd-fonts.git
@@ -323,23 +331,42 @@ config_zsh() {
     *) echo "Please answer yes or no." ;;
     esac
   done
-
 }
+
 
 config_tmux() {
   local pac="tmux"
   check_package_installed ${pac}
   if [ "${retVal}" = "True" ]; then
-    echo "${pac} is already installed"
+    echo -e "${COLOR_GREEN}${pac} is already installed${COLOR_NONE}"
+
   elif [ "${retVal}" == "False" ]; then
-    echo "${pac} is not installed"
-    sudo apt install -y tmux
+    echo -e "${COLOR_RED}${pac} is not installed${COLOR_NONE}"
+    printf "installing tmux.."
+
+    apt_install_wrapper ${pac} >/dev/null 2>&1 &
+
+    pid=$!
+    i=0
+    echo -e ${COLOR_CYAN}
+    while kill -0 $pid 2>/dev/null
+    do
+      i=$(( (i+1) %4 ))
+      printf "\r ${spin:$i:1}"
+      # echo -en "${spin:$i:1}"
+      # echo -en "\010"
+      #printf "."
+      sleep .1
+    done
+    echo -e ${COLOR_NONE}
+
   fi
 
   local file=".tmux.conf"
-  if [ -f "${HOME}/$file" ]; then
+  if [ -f "${HOME}/${file}" ]; then
     while true; do
-      read -p "$file is already existed. overwrite it? (y/n)" yn
+      echo " "
+      read -p "${file} is already existed. overwrite it? [Y/n]" yn
       case $yn in
       [Yy]*)
         cp tmux.conf ${HOME}/.tmux.conf
@@ -350,11 +377,29 @@ config_tmux() {
       esac
     done
   else
-    cp tmux.conf ${HOME}/.tmux.conf
+    cp -v tmux.conf ${HOME}/.tmux.conf
   fi
 
-  git clone https://github.com/tmux-plugins/tpm ~/.tmux/plugins/tpm
-  ~/.tmux/plugins/tpm/scripts/install_plugins.sh
+  echo -e "install tmux plugins .."
+  git clone https://github.com/tmux-plugins/tpm ~/.tmux/plugins/tpm > /dev/null 2>&1
+  ~/.tmux/plugins/tpm/scripts/install_plugins.sh > /dev/null 2>&1
+
+  # custom_install_wrapper "git clone https://github.com/tmux-plugins/tpm ~/.tmux/plugins/tpm
+  # ~/.tmux/plugins/tpm/scripts/install_plugins.sh"
+
+  # pid=$!
+  # i=0
+  # echo -e ${COLOR_CYAN}
+  # while kill -0 $pid 2>/dev/null
+  # do
+  #   i=$(( (i+1) %4 ))
+  #   printf "\r ${spin:$i:1}"
+  #   # echo -en "${spin:$i:1}"
+  #   # echo -en "\010"
+  #   #printf "."
+  #   sleep .1
+  # done
+  # echo -e ${COLOR_NONE}
 }
 
 config_lazygit() {
