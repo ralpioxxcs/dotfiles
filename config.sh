@@ -1,6 +1,7 @@
 #!/bin/bash
 
-# Bash Colours
+#########################
+# Bash colors
 COLOR_NONE='\033[0m'
 COLOR_BLACK='\033[0;30m'
 COLOR_RED='\033[0;31m'
@@ -19,16 +20,32 @@ COLOR_LIGHT_PURPLE='\033[1;35m'
 COLOR_LIGHT_CYAN='\033[1;36m'
 COLOR_WHITE='\033[1;37m'
 
-################################################################
+#########################
+## Constants
+declare -r RETURN_TRUE=1
+declare -r RETURN_FALSE=0
 
-log_filename="log_$(date_+%y%m%d%H%M%S).txt"
+#########################
+## Runtime variables
+os_type=$(uname)
+sudoPW=""
+log_filename='log_$(date_+%y%m%d%H%M%S).txt'
 spin='-\|/'
 
+################################################################
+
 main() {
-  os_type=$(uname)
+  sudo -S true < /dev/null 2> /dev/null
+  if [ $? != 0 ]; then
+    read -s -p "Enter password for sudo: " sudoPW
+    echo -n ${sudoPW} | sudo -S ls /root >/dev/null 2>&1
+    if [ $? != 0 ]; then
+      echo -e "${COLOR_RED}sudo password is incorrect${COLOR_NONE}"
+      exit    
+    fi
+  fi
 
   check_preinstalled_packages
-
 
   while true; do
     clear
@@ -56,28 +73,37 @@ main() {
   done
 }
 
-################################################################
-check_preinstalled_packages() {
-  prerequsite_pacakges=("curl", "zsh")
-  echo "check preinstalled packages.."
+##########################################
+################ util ####################
+##########################################
 
-  sudo apt install -y curl wget 2>&1 /dev/null
+check_preinstalled_packages() {
+  local prerequsite_pacakges=("curl", "zsh")
+  echo " "
+  echo "check & install prerequisite packages.."
+  apt_install_wrapper curl wget >/dev/null 2>&1 &
+  spinner 
 }
 
-# check if package is installed
 check_package_installed() {
   pkgName=${1}
+
+  if command -v ${pkgName} &> /dev/null
+  then
+    retVal="True"
+    return 
+  fi
+
   if [ ${os_type} == "Darwin" ]; then
     ok=$(brew ls --versions ${pkgName})
   elif [ ${os_type} == "Linux" ]; then
     ok=$(dpkg-query -W --showformat='${Status}\n' ${pkgName} | grep "install ok installed")
   fi
 
+
   if [ -n "${ok}" ]; then
-    #printf "${COLOR_GREEN}${pkgName} is installed${COLOR_NONE}\n"
     retVal="True"
   else
-    #printf "${COLOR_RED}${pkgName} is not installed${COLOR_NONE}\n"
     retVal="False"
   fi
 }
@@ -93,12 +119,28 @@ apt_install_wrapper() {
     packages+=" ${var}"
   done
   echo ${packages}
-  sudo apt install -y ${packages}
+
+  echo $sudoPW | sudo -S apt install -y ${packages}
 }
 
 custom_install_wrapper() {
-  $0
+  for cmd in "$@"
+  do
+    eval "${cmd}"
+  done
+}
 
+spinner() {
+    pid=$!
+    i=0
+    while kill -0 $pid 2>/dev/null
+    do
+      i=$(( (i+1) %4 ))
+      #printf "${COLOR_CYAN}\r${spin:$i:1}"
+      printf "."
+      sleep .1
+    done
+    echo -e ${COLOR_NONE}
 }
 
 ################################################################
@@ -113,11 +155,11 @@ terminal() {
     read ans
 
     if [ "$ans" != "${ans#[1]}" ]; then
-      config_zsh
+      install_zsh
     elif [ "$ans" != "${ans#[2]}" ]; then
-      config_tmux
+      install_tmux
     elif [ "$ans" != "${ans#[3]}" ]; then
-      config_lazygit
+      install_lazygit
     elif [ "$ans" != "${ans#[4]}" ]; then
       break
     else
@@ -129,13 +171,13 @@ terminal() {
 editors() {
   while true; do
     clear
-    printf "(1) neovim\n"
-    printf "(2) vscode\n"
-    printf "(3) ${COLOR_RED}back${COLOR_WHITE}\n"
+    printf "[1] neovim\n"
+    printf "[2] vscode\n"
+    echo -e "[3] ${COLOR_DARK_GRAY}back${COLOR_NONE}"
     read ans
 
     if [ "$ans" != "${ans#[1]}" ]; then
-      config_neovim
+      install_neovim
     elif [ "$ans" != "${ans#[2]}" ]; then
       # config_vscode
       echo "skip"
@@ -149,14 +191,14 @@ editors() {
 
 languages() {
   while true; do
-    clear
-    echo "(1) golang"
-    echo "(2) rust"
-    echo "(3) ${COLOR_RED}back${COLOR_WHITE}"
+    clear    
+    echo "[1] golang"
+    echo "[2] rust"
+    echo -e "[3] ${COLOR_DARK_GRAY}back${COLOR_NONE}"
     read ans
 
     if [ "$ans" != "${ans#[1]}" ]; then
-      config_golang
+      install_golang
     elif [ "$ans" != "${ans#[2]}" ]; then
       # config_rust
       echo "skip"
@@ -170,29 +212,27 @@ languages() {
 
 ################################################################
 
-config_neovim() {
+install_neovim() {
   local pac="neovim"
   check_package_installed ${pac}
   if [ "${retVal}" = "True" ]; then
-    echo "${pac} is already installed"
+    echo -e "${COLOR_GREEN}${pac} is already installed${COLOR_NONE}"
   elif [ "${retVal}" == "False" ]; then
-    echo "${pac} is not installed"
-    sudo apt-get install software-properties-common
-    sudo add-apt-repository ppa:neovim-ppa/stable
-    sudo apt-get update
-    sudo apt-get install -y neovim
-    sudo apt-get install python-dev python-pip python3-dev python3-pip
-    sudo update-alternatives --install /usr/bin/vi vi /usr/bin/nvim 60
-    sudo update-alternatives --config vi
-    sudo update-alternatives --install /usr/bin/vim vim /usr/bin/nvim 60
-    sudo update-alternatives --config vim
-    sudo update-alternatives --install /usr/bin/editor editor /usr/bin/nvim 60
-    sudo update-alternatives --config editor
+    echo -e "${COLOR_RED}${pac} is not installed${COLOR_NONE}"
+    printf "installing ${pac}"
+
+    custom_install_wrapper \
+    'wget https://github.com/neovim/neovim/releases/download/stable/nvim-linux64.deb' \
+    'sudo apt install ./nvim-linux64.deb' \
+    >/dev/null 2>&1 &
+    spinner
+
+    rm -rf nvim-linux64.deb
   fi
 
   if [ -d "${HOME}/.config/nvim" ]; then
     while true; do
-      read -p "neovim config folder is already existed. overwrite it? (y/n)" yn
+      read -p "neovim config directory is already existed. overwrite it? [Y/n]" yn
       case $yn in
       [Yy]*)
         mkdir -p ${HOME}/.config/
@@ -202,9 +242,8 @@ config_neovim() {
             https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
           nvim -c "PlugInstall" -c "qall"
         fi
-        break
-        ;;
-      [Nn]*) break ;;
+        break;;
+      [Nn]*) break;;
       *) echo "Please answer yes or no." ;;
       esac
     done
@@ -215,68 +254,84 @@ config_neovim() {
       curl -fLo ~/.vim/autoload/plug.vim --create-dirs \
         https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
       nvim -c "PlugInstall" -c "qall"
+      nvim -c "coc-sh" -c "qall"
+      nvim -c "coc-json" -c "qall"
+      nvim -c "coc-cmake" -c "qall"
+      nvim -c "coc-go" -c "qall"
     fi
   fi
 
-  # Dependency - Node JS
+  echo -e "${COLOR_GREEN}install dependencies ${COLOR_NONE}"
+
   local pac="nodejs"
   check_package_installed ${pac}
   if [ "${retVal}" = "True" ]; then
-    echo "${pac} is already installed"
+    echo -e "${COLOR_GREEN}${pac} is already installed${COLOR_NONE}"
   elif [ "${retVal}" == "False" ]; then
-    echo "${pac} is not installed"
-    curl -sL https://deb.nodesource.com/setup_14.x | sudo -E bash -
-    sudo apt-get install -y nodejs
+    echo -e "${COLOR_RED}${pac} is not installed${COLOR_NONE}"
+    printf "installing ${pac}"
+    custom_install_wrapper \
+    'curl -fsSL https://deb.nodesource.com/setup_lts.x | sudo -E bash -' \
+    'sudo apt-get install -y nodejs' \
+    >/dev/null 2>&1 &
+    spinner
   fi
 
-  # Dependency - Ctags
   local pac="exuberant-ctags"
   check_package_installed ${pac}
   if [ "${retVal}" = "True" ]; then
-    echo "${pac} is already installed"
+    echo -e "${COLOR_GREEN}${pac} is already installed${COLOR_NONE}"
   elif [ "${retVal}" == "False" ]; then
-    echo "${pac} is not installed"
-    sudo apt-get install -y exuberant-ctags
+    echo -e "${COLOR_RED}${pac} is not installed${COLOR_NONE}"
+    printf "installing ${pac}"
+    apt_install_wrapper exuberant-ctags 2>&1 &
+    spinner
   fi
 
-  # Dependency - Ripgrep
   local pac="ripgrep"
   check_package_installed ${pac}
   if [ "${retVal}" = "True" ]; then
-    echo "${pac} is already installed"
+    echo -e "${COLOR_GREEN}${pac} is already installed${COLOR_NONE}"
   elif [ "${retVal}" == "False" ]; then
-    echo "${pac} is not installed"
+    echo -e "${COLOR_RED}${pac} is not installed${COLOR_NONE}"
+    printf "installing ${pac}"
+    custom_install_wrapper \
+    'curl -LO https://github.com/BurntSushi/ripgrep/releases/download/12.1.1/ripgrep_12.1.1_amd64.deb' \
+    'sudo dpkg -i ripgrep_12.1.1_amd64.deb' \
+    >/dev/null 2>&1 &
+    spinner
 
-    curl -LO https://github.com/BurntSushi/ripgrep/releases/download/12.1.1/ripgrep_12.1.1_amd64.deb
-    sudo dpkg -i ripgrep_12.1.1_amd64.deb
-    rm ripgrep_12.1.1_amd64.deb
+    rm -rf ripgrep_12.1.1_amd64.deb
   fi
 }
 
-config_zsh() {
+install_zsh() {
   local pac="zsh"
   check_package_installed ${pac}
   if [ "${retVal}" = "True" ]; then
-    echo "${pac} is already installed"
+    echo -e "${COLOR_GREEN}${pac} is already installed${COLOR_NONE}"
   elif [ "${retVal}" == "False" ]; then
-    echo "${pac} is not installed"
-    sudo apt install -y zsh
+    echo -e "${COLOR_RED}${pac} is not installed${COLOR_NONE}"
+    printf "installing zsh.."
+    apt_install_wrapper ${pac} >/dev/null 2>&1 &
+    spinner
     zsh --version
     chsh -s $(which zsh)
   fi
 
   # copy dotfile (zshrc, aliases)
-  echo "copy \"zshrc\""
-  cp zshrc ${HOME}/.zshrc 2 /dev/null &>1
-  echo "copy \"aliases\""
-  cp aliases ${HOME}/.aliases 2 /dev/null &>1
+  cp -v zshrc ${HOME}/.zshrc
+  cp -v aliases ${HOME}/.aliases
 
   # oh-my-zsh configuration
   if [ ! -d "${HOME}/.oh-my-zsh" ]; then
-    echo -e "oh-my-zsh is not installed\n"
-    sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
+    echo -e "${COLOR_RED}oh-my-zsh is not installed${COLOR_NONE}"
+    custom_install_wrapper \
+    'sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"' \
+    >/dev/null 2>&1 &
+    spinner
   else
-    echo -e "oh-my-zsh is already installed\n"
+    echo -e "${COLOR_GREEN}oh-my-zsh is already installed${COLOR_NONE}"
   fi
 
   zsh_plugins=("zsh-completions" "zsh-syntax-highlighting" "zsh-autosuggestions", "spaceship-prompt", "fzf")
@@ -284,95 +339,59 @@ config_zsh() {
   # install plugins
   # -- completion, syntax-highligting, autosuggestions, fzf
   #----------------------------------------------------------------------------------------
-  if [ -d ~/.oh-my-zsh/plugins/zsh-completions ]; then
-    cd ~/.oh-my-zsh/plugins/zsh-completions && git pull
-  else
-    git clone https://github.com/zsh-users/zsh-completions.git ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-completions 2>&1 /dev/null
-  fi
+  echo -e "${COLOR_GREEN}install oh-my-zsh plugins${COLOR_NONE}"
+  custom_install_wrapper \
+    'git clone --depth=1 https://github.com/zsh-users/zsh-completions.git ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-completions' \
+    'git clone --depth=1 https://github.com/zsh-users/zsh-syntax-highlighting.git ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-syntax-highlighting' \
+    'git clone --depth=1 https://github.com/zsh-users/zsh-autosuggestions ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-autosuggestions' \
+    'git clone --depth=1 https://github.com/Aloxaf/fzf-tab ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/fzf-tab' \
+    'git clone --depth=1 https://github.com/spaceship-prompt/spaceship-prompt.git ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/themes/spaceship-prompt' \
+    'ln -s ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/themes/spaceship-prompt/spaceship.zsh-theme ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/themes/spaceship.zsh-theme' \
+    'git clone --depth 1 https://github.com/junegunn/fzf.git ~/.fzf' \
+    'yes | ~/.fzf/install' \
+    >/dev/null 2>&1 &
+    spinner
 
-  if [ -d ~/.oh-my-zsh/plugins/zsh-syntax-highlighting ]; then
-    cd ~/.oh-my-zsh/plugins/zsh-syntax-highlighting && git pull
-  else
-    git clone https://github.com/zsh-users/zsh-syntax-highlighting.git ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-syntax-highlighting 2>&1 /dev/null
-  fi
-
-  if [ -d ~/.oh-my-zsh/plugins/zsh-autosuggestions ]; then
-    cd ~/.oh-my-zsh/plugins/zsh-autosuggestions && git pull
-  else
-    git clone https://github.com/zsh-users/zsh-autosuggestions ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-autosuggestions 2>&1 /dev/null
-  fi
-
-  if [ -d ~/.oh-my-zsh/plugins/spaceship-prompt ]; then
-    cd ~/.oh-my-zsh/plugins/spaceship-prompt && git pull
-  else
-    git clone https://github.com/spaceship-prompt/spaceship-prompt.git "${ZSH_CUSTOM}/themes/spaceship-prompt" --depth=1 2>&1 /dev/null
-    ln -s "${ZSH_CUSTOM}/themes/spaceship-prompt/spaceship.zsh-theme" "${ZSH_CUSTOM}/themes/spaceship.zsh-theme" 2>&1 /dev/null
-  fi
-
-  if [ -d ~/.fzf ]; then
-    cd ~/.fzf && git pull
-  else
-    git clone --depth 1 https://github.com/junegunn/fzf.git ~/.fzf 2>&1 /dev/null
-    ~/.fzf/install 2>&1 /dev/null
-  fi
-
-  #cp agnoster.zsh-theme ${ZSH}/themes
-
-  echo -e "n"
   while true; do
-    read -p "Do you want to install Nerd-Fonts? (Hack) (y/n)" yn
+    read -p "Do you want to install Nerd-Fonts? (Hack) [Y/n]" yn
     case $yn in
     [Yy]*)
-      git clone --depth=1 https://github.com/ryanoasis/nerd-fonts.git
-      nerd-fonts/install.sh Hack
-      break
-      ;;
-    [Nn]*) return 1 ;;
+      echo "install nerd font .."
+      custom_install_wrapper \
+      'git clone --depth=1 https://github.com/ryanoasis/nerd-fonts.git' \
+      'nerd-fonts/install.sh Hack' \
+      >/dev/null 2>&1 &
+      spinner
+
+      break;;
+    [Nn]*) break;;
     *) echo "Please answer yes or no." ;;
     esac
   done
 }
 
-
-config_tmux() {
+install_tmux() {
   local pac="tmux"
   check_package_installed ${pac}
   if [ "${retVal}" = "True" ]; then
     echo -e "${COLOR_GREEN}${pac} is already installed${COLOR_NONE}"
-
   elif [ "${retVal}" == "False" ]; then
     echo -e "${COLOR_RED}${pac} is not installed${COLOR_NONE}"
     printf "installing tmux.."
-
     apt_install_wrapper ${pac} >/dev/null 2>&1 &
-
-    pid=$!
-    i=0
-    echo -e ${COLOR_CYAN}
-    while kill -0 $pid 2>/dev/null
-    do
-      i=$(( (i+1) %4 ))
-      printf "\r ${spin:$i:1}"
-      # echo -en "${spin:$i:1}"
-      # echo -en "\010"
-      #printf "."
-      sleep .1
-    done
-    echo -e ${COLOR_NONE}
-
+    spinner
   fi
 
   local file=".tmux.conf"
   if [ -f "${HOME}/${file}" ]; then
     while true; do
       echo " "
-      read -p "${file} is already existed. overwrite it? [Y/n]" yn
+      read -p "${file} is already existed, overwrite it? [Y/n]" yn
       case $yn in
       [Yy]*)
-        cp tmux.conf ${HOME}/.tmux.conf
-        break
-        ;;
-      [Nn]*) return 1 ;;
+        cp -v tmux.conf ${HOME}/.tmux.conf
+        break;;
+      [Nn]*) return;;
       *) echo "Please answer yes or no." ;;
       esac
     done
@@ -380,48 +399,37 @@ config_tmux() {
     cp -v tmux.conf ${HOME}/.tmux.conf
   fi
 
-  echo -e "install tmux plugins .."
-  git clone https://github.com/tmux-plugins/tpm ~/.tmux/plugins/tpm > /dev/null 2>&1
-  ~/.tmux/plugins/tpm/scripts/install_plugins.sh > /dev/null 2>&1
-
-  # custom_install_wrapper "git clone https://github.com/tmux-plugins/tpm ~/.tmux/plugins/tpm
-  # ~/.tmux/plugins/tpm/scripts/install_plugins.sh"
-
-  # pid=$!
-  # i=0
-  # echo -e ${COLOR_CYAN}
-  # while kill -0 $pid 2>/dev/null
-  # do
-  #   i=$(( (i+1) %4 ))
-  #   printf "\r ${spin:$i:1}"
-  #   # echo -en "${spin:$i:1}"
-  #   # echo -en "\010"
-  #   #printf "."
-  #   sleep .1
-  # done
-  # echo -e ${COLOR_NONE}
+  echo -e "instaling tmux plugin manager (tpm)"
+  custom_install_wrapper \
+  'git clone https://github.com/tmux-plugins/tpm ~/.tmux/plugins/tpm' \
+  '~/.tmux/plugins/tpm/scripts/install_plugins.sh' \
+  >/dev/null 2>&1 &
+  spinner
 }
 
-config_lazygit() {
+install_lazygit() {
   local pac="lazygit"
   check_package_installed ${pac}
   if [ "${retVal}" = "True" ]; then
-    echo "${pac} is already installed"
+    echo -e "${COLOR_GREEN}${pac} is already installed${COLOR_NONE}"
+    sleep 1
+    return
   elif [ "${retVal}" == "False" ]; then
-    echo "${pac} is not installed"
-
-    LAZYGIT_VERSION=$(curl -s "https://api.github.com/repos/jesseduffield/lazygit/releases/latest" | grep -Po '"tag_name": "v\K[0-35.]+')
-
-    curl -Lo lazygit.tar.gz "https://github.com/jesseduffield/lazygit/releases/latest/download/lazygit_${LAZYGIT_VERSION}_Linux_x86_64.tar.gz"
-
-    sudo tar xf lazygit.tar.gz -C /usr/local/bin lazygit
-
+    echo -e "${COLOR_RED}${pac} is not installed${COLOR_NONE}"
+    echo "install lazygit.."
+    custom_install_wrapper \
+    'export LAZYGIT_VERSION=$(curl -s "https://api.github.com/repos/jesseduffield/lazygit/releases/latest" | grep -Po '\''"tag_name": "v\K[0-35.]+'\'')' \
+    'curl -Lo --silent lazygit.tar.gz "https://github.com/jesseduffield/lazygit/releases/latest/download/lazygit_${LAZYGIT_VERSION}_Linux_x86_64.tar.gz"' \
+    'sudo tar xf lazygit.tar.gz -C /usr/local/bin lazygit' \
+    >/dev/null 2>&1 &
+    spinner
   fi
-
+  echo -e "${COLOR_GREEN}${pac} has successfully installed!${COLOR_NONE}"
   lazygit --version
+  sleep 3
 }
 
-config_golang() {
+install_golang() {
   local go_ver=1.15.8
 
   if ! command -v go &>/dev/null; then
