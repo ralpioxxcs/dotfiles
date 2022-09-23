@@ -1,0 +1,15 @@
+{
+    "workbench.iconTheme": "material-icon-theme",
+    "editor.fontFamily": "'Hack Nerd Font', 'Droid Sans Mono', 'monospace', monospace",
+    "cmake.configureOnOpen": true,
+    "editor.minimap.enabled": false,
+    "workbench.colorTheme": "Nord",
+    "vim.handleKeys": {
+        "<C-a>": false,
+        "<C-f>": false,
+        "<C-d>": false,
+        "<C-k>": false
+    },
+    "todohighlight.isEnable": true,
+    "window.zoomLevel": -1
+}
