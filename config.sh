@@ -320,8 +320,8 @@ install_zsh() {
   fi
 
   # copy dotfile (zshrc, aliases)
-  cp -v zshrc ${HOME}/.zshrc
-  cp -v aliases ${HOME}/.aliases
+  cp -v .zshrc ${HOME}/.zshrc
+  cp -v .aliases ${HOME}/.aliases
 
   # oh-my-zsh configuration
   if [ ! -d "${HOME}/.oh-my-zsh" ]; then
