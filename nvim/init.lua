@@ -1,0 +1,10 @@
+require('options')
+require('mapping')
+require('plugins')
+
+require('plugin.lualine')
+require('plugin.mason')
+require('plugin.cmp')
+require('plugin.bufferline')
+require('plugin.nightfox')
+require('plugin.nvim-tree-config')
