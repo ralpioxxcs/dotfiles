@@ -47,17 +47,31 @@ return require('packer').startup(function(use)
   -- buffer line
   use {'akinsho/bufferline.nvim', tag = "v3.*", requires = 'nvim-tree/nvim-web-devicons'}
 
-  use 'numToStr/Comment.nvim'            -- comment utility
+  -- easymotion
+  use {
+    'phaazon/hop.nvim',
+    branch = 'v2', -- optional but strongly recommended
+    config = function()
+      -- you can configure Hop the way you like here; see :h hop-config
+      require'hop'.setup{
+        keys = 'etovxqpdygfblzhckisuran',
+      }
+    end
+  }
+
+  use 'mg979/vim-visual-multi'      -- multiline selection
+
+  use 'numToStr/Comment.nvim'       -- comment utility
 
   -- completions
   use 'hrsh7th/nvim-cmp'            -- completion plugin
   use 'hrsh7th/cmp-buffer'          -- buffer completion
   use 'hrsh7th/cmp-path'            -- path completion
   use 'hrsh7th/cmp-cmdline'         -- cmdline completion
+  use 'hrsh7th/cmp-nvim-lsp'
   use 'saadparwaiz1/cmp_luasnip'
 
   -- lsp
-  use 'hrsh7th/cmp-nvim-lsp'
   use 'williamboman/mason.nvim'
   use 'williamboman/mason-lspconfig.nvim'
   use 'neovim/nvim-lspconfig'

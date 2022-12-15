@@ -1,6 +1,7 @@
 local status_ok, _ = pcall(require, "lspconfig")
-if not statsu_ok then
+if not status_ok then
   return
 end
 
-require("lsp.mason")
+require('plugin.lsp.mason')
+require('plugin.lsp.handlers').setup()
