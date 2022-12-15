@@ -1,12 +1,15 @@
+-- Shorten vim function
 local fn = vim.fn
 
-local install_path = fn.stdpath('data')..'/site/pack/packer/start/packet.nvim'
+-- packer 자동 설치
+-- vim.fn.stdpath({what}) -- returns standard-path locations of various default files and dirs
+-- vim.fn.empty({expr})
+-- vim.fn.glob
+-- vim.fn.system({cmd} [, {input}) - output of shell command
+local install_path = fn.stdpath('data')..'/site/pack/packer/start/packer.nvim'
 if fn.empty(fn.glob(install_path)) > 0 then
   fn.system({
-    'git', 
-    'clone', 
-    '--depth', 
-    '1', 
+    'git', 'clone', '--depth', '1',
     'https://github.com/wbthomason/packer.nvim',
     install_path,
   })
@@ -14,7 +17,7 @@ if fn.empty(fn.glob(install_path)) > 0 then
   vim.cmd([[packadd packer.nvim]])
 end
 
--- Autocommand that reloads neovim whenever save the plugins.lua file
+-- 현재파일 ('plugins.lua') 수정사항 발생시 auto reload
 vim.cmd[[
   augroup packer_user_config
     autocmd!
@@ -22,62 +25,48 @@ vim.cmd[[
   augroup end
 ]]
 
+-- Load packer module
 local status_ok, packer = pcall(require, "packer")
 if not status_ok then
   return
 end
 
---packer.init({
---  display = {
---    open_fn = function()
---      return require("packer.util").float({border = "rounded"})
---    end,
---  },
---})
-
 -- Install plugins here
 return require('packer').startup(function(use)
-  use 'wbthomason/packer.nvim'    -- packer itself
+  use 'wbthomason/packer.nvim'      -- packer itself
+  use 'nvim-lua/plenary.nvim'     	-- commom utilites including useful lua function
+  use 'onsails/lspkind-nvim'      	-- vscode-like pictograms
+  use 'windwp/nvim-autopairs'		    -- a super powerful autopair plugin for neovim
+  use 'kyazdani42/nvim-tree.lua'    -- tree explorer
+  use 'kyazdani42/nvim-web-devicons'-- provide dev icons
+  use 'EdenEast/nightfox.nvim' 		  -- colorscheme
 
   -- status line
-  use {
-    'nvim-lualine/lualine.nvim',
-    requires = { 'kyazdani42/nvim-web-devicons', opt = true }
-  }
+  use {'nvim-lualine/lualine.nvim', requires = { 'kyazdani42/nvim-web-devicons', opt = true } }
 
-  use 'nvim-lua/plenary.nvim'     -- commom utilites
-  use 'onsails/lspkind-nvim'      -- vscode-like pictograms
-  use 'windwp/nvim-autopairs'
-  use 'kyazdani42/nvim-tree.lua'
-  use 'kyazdani42/nvim-web-devicons'
-  use 'EdenEast/nightfox.nvim'
+  -- buffer line
+  use {'akinsho/bufferline.nvim', tag = "v3.*", requires = 'nvim-tree/nvim-web-devicons'}
 
-  -- completion
-  use 'hrsh7th/cmp-nvim-lsp'
-  use 'hrsh7th/cmp-buffer'
-  use 'hrsh7th/cmp-path'
-  use 'hrsh7th/cmp-cmdline'
-  use 'hrsh7th/nvim-cmp'
+  use 'numToStr/Comment.nvim'            -- comment utility
+
+  -- completions
+  use 'hrsh7th/nvim-cmp'            -- completion plugin
+  use 'hrsh7th/cmp-buffer'          -- buffer completion
+  use 'hrsh7th/cmp-path'            -- path completion
+  use 'hrsh7th/cmp-cmdline'         -- cmdline completion
+  use 'saadparwaiz1/cmp_luasnip'
 
   -- lsp
+  use 'hrsh7th/cmp-nvim-lsp'
   use 'williamboman/mason.nvim'
   use 'williamboman/mason-lspconfig.nvim'
   use 'neovim/nvim-lspconfig'
-
-  -- colorschemes
-  use 'arcticicestudio/nord-vim'
 
   -- snippets
   use 'L3MON4D3/LuaSnip'          -- lua sinppet engine
 
   -- treesitter
-  use {
-    'nvim-treesitter/nvim-treesitter',
-		commit = '8e763332b7bf7b3a426fd8707b7f5aa85823a5ac',
-	}
-  
-  -- bufferline
-  use {'akinsho/bufferline.nvim', tag = "v3.*", requires = 'nvim-tree/nvim-web-devicons'}
+  use {'nvim-treesitter/nvim-treesitter', commit = '8e763332b7bf7b3a426fd8707b7f5aa85823a5ac'}
 
   if PACKER_BOOTSTRAP then
     require("packer").sync()

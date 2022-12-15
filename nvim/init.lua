@@ -1,10 +1,13 @@
 require('options')
-require('mapping')
+require('keymap')
 require('plugins')
-
-require('plugin.lualine')
-require('plugin.mason')
-require('plugin.cmp')
+------------------------
+-- plugin settings
+require('plugin.lsp')
+require('plugin.autopairs')
 require('plugin.bufferline')
-require('plugin.nightfox')
+require('plugin.lualine')
+require('plugin.comment')
 require('plugin.nvim-tree-config')
+require('plugin.treesitter')
+require('plugin.nightfox')
