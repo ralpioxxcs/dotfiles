@@ -1,15 +1,35 @@
 {
-    "workbench.iconTheme": "material-icon-theme",
-    "editor.fontFamily": "'Hack Nerd Font', 'Droid Sans Mono', 'monospace', monospace",
-    "cmake.configureOnOpen": true,
-    "editor.minimap.enabled": false,
-    "workbench.colorTheme": "Nord",
-    "vim.handleKeys": {
-        "<C-a>": false,
-        "<C-f>": false,
-        "<C-d>": false,
-        "<C-k>": false
-    },
-    "todohighlight.isEnable": true,
-    "window.zoomLevel": -1
+  "workbench.colorTheme": "Nord",
+  "editor.minimap.enabled": false,
+  "editor.fontFamily": "'Fira Code', 'Hack Nerd Font Mono', 'Droid Sans Mono', 'monospace', monospace",
+  "editor.renderWhitespace": "boundary",
+  "todohighlight.isEnable": true,
+  "[javascript]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "prettier.bracketSameLine": true,
+  "[jsonc]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "git.enableSmartCommit": true,
+  "editor.fontLigatures": true,
+  "workbench.editor.enablePreview": false,
+  "vim.handleKeys": {
+    "<C-a>": false,
+    "<C-f>": false,
+    "<C-d>": false,
+    "<C-k>": false
+  },
+    "indentRainbow.colors": [
+    "rgba(255,255,64,0.07)",
+    "rgba(127,255,127,0.07)",
+    "rgba(255,127,255,0.07)",
+    "rgba(79,236,236,0.07)"
+  ],
+  // The indent color if the number of spaces is not a multiple of "tabSize".
+  "indentRainbow.errorColor": "rgba(128,32,32,0.6)",
+  // The indent color when there is a mix between spaces and tabs.
+  // To be disabled this coloring set this to an empty string.
+  "indentRainbow.tabmixColor": "rgba(128,32,96,0.6)",
+  "indentRainbow.colorOnWhiteSpaceOnly": true,
 }
