@@ -78,10 +78,10 @@ main() {
 ##########################################
 
 check_preinstalled_packages() {
-  local prerequsite_pacakges=("curl", "zsh")
+  local prerequsite_pacakges=("curl", "zsh", "lua5.2")
   echo " "
   echo "check & install prerequisite packages.."
-  apt_install_wrapper curl wget >/dev/null 2>&1 &
+  apt_install_wrapper curl wget lua5.2 >/dev/null 2>&1 &
   spinner 
 }
 
@@ -111,6 +111,11 @@ check_package_installed() {
 check_directory_is_exist() {
   dirName=${1}
 }
+
+check_binary_is_exist() {
+  binName=${1}
+}
+
 
 apt_install_wrapper() {
   packages=" "
@@ -222,12 +227,15 @@ install_neovim() {
     printf "installing ${pac}"
 
     custom_install_wrapper \
-    'wget https://github.com/neovim/neovim/releases/download/stable/nvim-linux64.deb' \
-    'sudo apt install ./nvim-linux64.deb' \
+    'wget https://github.com/neovim/neovim/releases/download/stable/nvim-linux64.tar.gz' \
+    'tar zxvf nvim-linux64.tar.gz' \
+    'sudo mv ./nvim-linux64/bin/nvim /usr/local/bin'
+    'sudo mv ./nvim-linux64/lib/* /usr/local/lib/'
+    'sudo mv ./nvim-linux64/share/* /usr/local/share/'
     >/dev/null 2>&1 &
     spinner
 
-    rm -rf nvim-linux64.deb
+    rm -rf nvim-linux64.tar.gz
   fi
 
   if [ -d "${HOME}/.config/nvim" ]; then
@@ -417,16 +425,18 @@ install_lazygit() {
   elif [ "${retVal}" == "False" ]; then
     echo -e "${COLOR_RED}${pac} is not installed${COLOR_NONE}"
     echo "install lazygit.."
+    #'export LAZYGIT_VERSION=$(curl -s "https://api.github.com/repos/jesseduffield/lazygit/releases/latest" | grep -Po '"tag_name": "v\K[^"]*')' \
+    #'curl -Lo lazygit.tar.gz "https://github.com/jesseduffield/lazygit/releases/latest/download/lazygit_${LAZYGIT_VERSION}_Linux_x86_64.tar.gz"' \
     custom_install_wrapper \
-    'export LAZYGIT_VERSION=$(curl -s "https://api.github.com/repos/jesseduffield/lazygit/releases/latest" | grep -Po '\''"tag_name": "v\K[0-35.]+'\'')' \
-    'curl -Lo lazygit.tar.gz "https://github.com/jesseduffield/lazygit/releases/latest/download/lazygit_${LAZYGIT_VERSION}_Linux_x86_64.tar.gz"' \
-    'sudo tar xf lazygit.tar.gz -C /usr/local/bin lazygit' \
+    'curl -Lo lazygit.tar.gz "https://github.com/jesseduffield/lazygit/releases/latest/download/lazygit_0.37.0_Linux_x86_64.tar.gz"' \
+    'tar xf lazygit.tar.gz lazygit' \
+    'sudo install lazygit /usr/local/bin' \
     dev/null 2>&1 &
     spinner
   fi
   echo -e "${COLOR_GREEN}${pac} has successfully installed!${COLOR_NONE}"
   lazygit --version
-  sleep 3
+  sleep 5
 }
 
 install_golang() {
