@@ -229,12 +229,13 @@ install_neovim() {
     custom_install_wrapper \
     'wget https://github.com/neovim/neovim/releases/download/stable/nvim-linux64.tar.gz' \
     'tar zxvf nvim-linux64.tar.gz' \
-    'sudo mv ./nvim-linux64/bin/nvim /usr/local/bin'
-    'sudo mv ./nvim-linux64/lib/* /usr/local/lib/'
-    'sudo mv ./nvim-linux64/share/* /usr/local/share/'
+    'sudo mv ./nvim-linux64/bin/nvim /usr/local/bin' \
+    'sudo mv ./nvim-linux64/lib/* /usr/local/lib/' \
+    'sudo mv ./nvim-linux64/share/* /usr/local/share/' \
     >/dev/null 2>&1 &
     spinner
 
+    rm -rf nvim-linux64
     rm -rf nvim-linux64.tar.gz
   fi
 
@@ -434,6 +435,8 @@ install_lazygit() {
     dev/null 2>&1 &
     spinner
   fi
+
+  rm -rf lazygit.tar.gz
   echo -e "${COLOR_GREEN}${pac} has successfully installed!${COLOR_NONE}"
   lazygit --version
   sleep 5
