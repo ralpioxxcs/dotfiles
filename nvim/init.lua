@@ -1,17 +1,18 @@
-------------------------
--- lua modules
-require('options')
-require('keymap')
-require('plugins')
+-- Import lua modules
 
-------------------------
--- plugin settings
-require('plugin.lsp')
-require('plugin.autopairs')
-require('plugin.bufferline')
-require('plugin.lualine')
-require('plugin.comment')
-require('plugin.cmp')
-require('plugin.nvim-tree-config')
-require('plugin.treesitter')
-require('plugin.nightfox')
+require("core/options")
+require("core/keymap")
+require("core/lazy")
+
+require("lsp")
+
+-- Load plugins
+require("plugins.nightfox")
+require("plugins.alpha-nvim")
+require("plugins.lualine")
+require("plugins.bufferline")
+require("plugins.nvim-tree")
+require("plugins.nvim-treesitter")
+require("plugins.nvim-autopairs")
+require("plugins.indent-blankline")
+require("plugins.comment")

@@ -3,7 +3,6 @@ if not status_ok then
   return
 end
 
-vim.opt.termguicolors = false
 bufferline.setup {
   options = {
     mode = "buffers",

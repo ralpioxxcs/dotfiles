@@ -29,4 +29,5 @@ nightfox.setup({
   },
 })
 
-vim.cmd("colorscheme nordfox")
+-- setup must be called before loading
+vim.cmd("colorscheme nightfox")

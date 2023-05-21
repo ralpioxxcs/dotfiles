@@ -45,14 +45,32 @@ keymap('n', "<C-Right>", ":vertical resize -2<CR>", opts)
 keymap('n', "<S-l>", ":bnext<CR>", opts)
 keymap('n', "<S-h>", ":bprevious<CR>", opts)
 
+-- Clear search highlighting with <leader> and c
+keymap('n', '<leader>c', ':nohl<CR>', opts)
+
 -- Alt + j : move text to up
 -- Alt + k : move text to down
 keymap("n", "<A-j>", "<Esc>:m .+1<CR>==gi", opts)
 keymap("n", "<A-k>", "<Esc>:m .-2<CR>==gi", opts)
 
--- File explorer
+-- NvimTree
+--  Leader + e : Open
+--  Leader + f : Refresh
+--  Leader + n : search
 keymap('n', "<leader>e", ":NvimTreeToggle<CR>", opts)
+keymap('n', '<leader>f', ':NvimTreeRefresh<CR>', opts)
+keymap('n', '<leader>n', ':NvimTreeFindFile<CR>', opts)
+
+-- Tagbar
+--  Leader + z : Open/Close
+keymap('n', '<leader>z', ':TagbarToggle<CR>', opts)
 ----------------------------------------------------------
+
+-- Terminal mappings
+--  Ctrl - t : Open terminal
+--  ESC : Exit terminal
+keymap('n', '<C-t>', ':Term<CR>', opts)
+keymap('t', '<Esc>', '<C-\\><C-n>', opts)
 
 ----------------------------------------------------------
 -- [Insert Mode]
