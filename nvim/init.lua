@@ -1,6 +1,9 @@
+------------------------
+-- lua modules
 require('options')
 require('keymap')
 require('plugins')
+
 ------------------------
 -- plugin settings
 require('plugin.lsp')
