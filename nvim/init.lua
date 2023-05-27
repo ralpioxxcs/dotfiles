@@ -18,3 +18,6 @@ require("plugins/nvim-autopairs")
 require("plugins/indent-blankline")
 require("plugins/comment")
 require("plugins/toggleterm")
+require("plugins/which-key")
+
+vim.cmd("colorscheme nightfox")

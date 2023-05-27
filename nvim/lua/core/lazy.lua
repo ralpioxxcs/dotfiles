@@ -94,6 +94,9 @@ require("lazy").setup({
   { "numToStr/Comment.nvim" },
 
   -- ToggleTerm
-  {'akinsho/toggleterm.nvim', version = "*", config = true}
+  { "akinsho/toggleterm.nvim", version = "*", config = true},
+
+  -- Which-Key
+  { "folke/which-key.nvim", lazy = true }
 
 })
