@@ -19,9 +19,10 @@ require("lazy").setup({
   -- Colorscheme
   {
     "EdenEast/nightfox.nvim",
-    lazy = false,
-    priority = 1000,
   },
+
+  -- Useful Lua functions
+  { "nvim-lua/plenary.nvim" },
 
   -- Dashboard
   {
@@ -47,17 +48,14 @@ require("lazy").setup({
     dependencies = { 'kyazdani42/nvim-web-devicons' },
   },
 
+  -- Gitsigns
+  { "lewis6991/gitsigns.nvim" },
+
   -- Indent guide
   { "lukas-reineke/indent-blankline.nvim" },
 
-  -- Autopair
-  {
-    "windwp/nvim-autopairs",
-    event = 'InsertEnter',
-    config = function()
-      require('nvim-autopairs').setup{}
-    end
-  },
+  -- Auto pair
+  { "windwp/nvim-autopairs" },
 
   -- LSP
   { "neovim/nvim-lspconfig" },
@@ -70,14 +68,10 @@ require("lazy").setup({
   -- Tag viewer
   { "preservim/tagbar" },
 
-  { "nvim-lua/plenary.nvim" },
-  { "onsails/lspkind-nvim" },
-
   -- Completions
   { 
     "hrsh7th/nvim-cmp",
     dependencies = {
-      "L3MON4D3/LuaSnip",
       "hrsh7th/cmp-cmdline",
       "hrsh7th/cmp-nvim-lsp",
       "hrsh7th/cmp-path",
@@ -86,10 +80,15 @@ require("lazy").setup({
     },
   },
 
+  -- Snippets
+  { "L3MON4D3/LuaSnip" },
+  { "rafamadriz/friendly-snippets" },
+
   -- Multiline selection
+  -- https://github.com/mg979/vim-visual-multi
   { "mg979/vim-visual-multi" },
 
-  -- Comment utility
+  -- Comment
   { "numToStr/Comment.nvim" },
 
   -- ToggleTerm

@@ -1,8 +1,7 @@
 -- Import lua modules
-
+require("core/lazy")
 require("core/options")
 require("core/keymap")
-require("core/lazy")
 
 require("lsp")
 
@@ -20,3 +19,4 @@ require("plugins/comment")
 require("plugins/toggleterm")
 require("plugins/which-key")
 require("plugins/telescope")
+require("plugins/gitsigns")
