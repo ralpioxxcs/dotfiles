@@ -53,6 +53,30 @@ keymap('n', '<leader>c', ':nohl<CR>', opts)
 keymap("n", "<A-j>", "<Esc>:m .+1<CR>==gi", opts)
 keymap("n", "<A-k>", "<Esc>:m .-2<CR>==gi", opts)
 
+
+----------------------------------------------------------
+
+-- Terminal mappings
+--  Ctrl - t : Open terminal
+--  ESC : Exit terminal
+keymap('n', '<C-t>', ':Term<CR>', opts)
+keymap('t', '<Esc>', '<C-\\><C-n>', opts)
+
+-- Lazygit
+keymap('n', "<learder>l", "<cmd>lua _lazygit_toggle()<CR>", opts)
+
+-- Htop
+keymap('n', "<learder>ht", "<cmd>lua _htop_toggle()<CR>", opts)
+
+
+-- Refresh Neovim
+keymap('n', '<leader>sv', ':source $MYVIMRC<CR>', opts)
+
+
+
+----------------------------------------------------------
+-- [Plugin Keymappings]
+
 -- NvimTree
 --  Leader + e : Open
 --  Leader + f : Refresh
@@ -63,18 +87,10 @@ keymap('n', '<leader>n', ':NvimTreeFindFile<CR>', opts)
 
 -- Tagbar
 --  Leader + z : Open/Close
-keymap('n', '<leader>z', ':TagbarToggle<CR>', opts)
-----------------------------------------------------------
+keymap('n', "<leader>z", ":TagbarToggle<CR>", opts)
 
--- Terminal mappings
---  Ctrl - t : Open terminal
---  ESC : Exit terminal
-keymap('n', '<C-t>', ':Term<CR>', opts)
-keymap('t', '<Esc>', '<C-\\><C-n>', opts)
-
-----------------------------------------------------------
--- [Insert Mode]
---
+-- Telescope
+keymap('n', "<C-f>", ":Telescope find_files<CR>", opts)
 
 ----------------------------------------------------------
 

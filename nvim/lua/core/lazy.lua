@@ -84,7 +84,6 @@ require("lazy").setup({
       "hrsh7th/cmp-buffer",
       "saadparwaiz1/cmp_luasnip",
     },
-
   },
 
   -- Multiline selection
@@ -95,6 +94,13 @@ require("lazy").setup({
 
   -- ToggleTerm
   { "akinsho/toggleterm.nvim", version = "*", config = true},
+
+  -- Telescope
+  {
+    "nvim-telescope/telescope.nvim", 
+    tag = '0.1.1',
+    dependencies = { 'nvim-lua/plenary.nvim' }
+  },
 
   -- Which-Key
   { "folke/which-key.nvim", lazy = true }

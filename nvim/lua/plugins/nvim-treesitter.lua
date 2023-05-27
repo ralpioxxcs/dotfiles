@@ -4,14 +4,42 @@ if not status_ok then
 end
 
 treesitter.setup({
-  ensure_installed = { "bash", "c", "cpp", "cmake", "go", "python", "javascript", "json", "css", "yaml", "markdown", "lua" },
+  ensure_installed = { 
+    "c", 
+    "cpp",
+    "make",
+    "cmake", 
+    "cuda",
+
+    "go",
+    "gomod",
+
+    "bash", 
+    "python", 
+    "lua",
+    "vim",
+
+    "javascript",
+    "typescript",
+    "html",
+    "css", 
+
+    "json", 
+    "yaml", 
+    "markdown", 
+  },
   sync_install = true,
   auto_install = true,
+
   autopairs = {
     enable = true
   },
+
   highlight = {
-    -- `false` will disable the whole extension
     enable = true,
   },
+
+  indent = {
+    enable = true,
+  }
 })
