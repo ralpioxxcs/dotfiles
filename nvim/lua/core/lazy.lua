@@ -84,6 +84,7 @@ require("lazy").setup({
       "hrsh7th/cmp-buffer",
       "saadparwaiz1/cmp_luasnip",
     },
+
   },
 
   -- Multiline selection
@@ -91,5 +92,8 @@ require("lazy").setup({
 
   -- Comment utility
   { "numToStr/Comment.nvim" },
+
+  -- ToggleTerm
+  {'akinsho/toggleterm.nvim', version = "*", config = true}
 
 })
