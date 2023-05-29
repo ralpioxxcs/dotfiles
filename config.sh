@@ -447,6 +447,11 @@ install_lazygit() {
 
   fi
 
+  if [ ! -d "${HOME}/.config/lazygit" ]; then
+    mkdir -p ${HOME}/.config/lazygit
+  fi
+  cp -av lazygit.yml ${HOME}/.config/lazygit/config.yml
+
   rm -rf lazygit.tar.gz lazygit
   echo -e "${COLOR_GREEN}${pac} has successfully installed!${COLOR_NONE}"
   lazygit --version
