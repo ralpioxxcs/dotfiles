@@ -237,22 +237,17 @@ install_neovim() {
     >/dev/null 2>&1 &
     spinner
 
-    rm -rf nvim-linux64
-    rm -rf nvim-linux64.tar.gz
+    rm -rf nvim-linux64.tar.gz nvim-linux64
   fi
 
   if [ -d "${HOME}/.config/nvim" ]; then
     while true; do
-      read -p "neovim config directory is already existed. overwrite it? [Y/n]" yn
+      read -p "neovim config directory is already existed. Overwrite it? [Y/n]" yn
       case $yn in
       [Yy]*)
         mkdir -p ${HOME}/.config/
-        rsync -azvh nvim ${HOME}/.config/
-        if [ ! -f "${HOME}/.config/nvim/autoload/plug.vim" ]; then
-          curl -fLo ~/.vim/autoload/plug.vim --create-dirs \
-            https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
-          nvim -c "PlugInstall" -c "qall"
-        fi
+        rsync -azvh neovim ${HOME}/.config/nvim
+        nvim -c "Lazy install"
         break;;
       [Nn]*) break;;
       *) echo "Please answer yes or no." ;;
@@ -260,34 +255,27 @@ install_neovim() {
     done
   else
     mkdir -p ${HOME}/.config/
-    rsync -azvh nvim ${HOME}/.config/
-    if [ ! -f "${HOME}/.config/nvim/autoload/plug.vim" ]; then
-      curl -fLo ~/.vim/autoload/plug.vim --create-dirs \
-        https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
-      nvim -c "PlugInstall" -c "qall"
-      nvim -c "coc-sh" -c "qall"
-      nvim -c "coc-json" -c "qall"
-      nvim -c "coc-cmake" -c "qall"
-      nvim -c "coc-go" -c "qall"
-    fi
+    rsync -azvh neoim ${HOME}/.config/nvim
+    nvim -c "Lazy install"
   fi
 
   echo -e "${COLOR_GREEN}install dependencies ${COLOR_NONE}"
 
-  local pac="nodejs"
-  check_package_installed ${pac}
-  if [ "${retVal}" = "True" ]; then
-    echo -e "${COLOR_GREEN}${pac} is already installed${COLOR_NONE}"
-  elif [ "${retVal}" == "False" ]; then
-    echo -e "${COLOR_RED}${pac} is not installed${COLOR_NONE}"
-    printf "installing ${pac}"
-    custom_install_wrapper \
-    'curl -fsSL https://deb.nodesource.com/setup_lts.x | sudo -E bash -' \
-    'sudo apt-get install -y nodejs' \
-    >/dev/null 2>&1 &
-    spinner
-  fi
+  # local pac="nodejs"
+  # check_package_installed ${pac}
+  # if [ "${retVal}" = "True" ]; then
+  #   echo -e "${COLOR_GREEN}${pac} is already installed${COLOR_NONE}"
+  # elif [ "${retVal}" == "False" ]; then
+  #   echo -e "${COLOR_RED}${pac} is not installed${COLOR_NONE}"
+  #   printf "installing ${pac}"
+  #   custom_install_wrapper \
+  #   'curl -fsSL https://deb.nodesource.com/setup_lts.x | sudo -E bash -' \
+  #   'sudo apt-get install -y nodejs' \
+  #   >/dev/null 2>&1 &
+  #   spinner
+  # fi
 
+  # TODO: universal-ctags (https://github.com/universal-ctags/ctags)
   local pac="exuberant-ctags"
   check_package_installed ${pac}
   if [ "${retVal}" = "True" ]; then
@@ -307,12 +295,12 @@ install_neovim() {
     echo -e "${COLOR_RED}${pac} is not installed${COLOR_NONE}"
     printf "installing ${pac}"
     custom_install_wrapper \
-    'curl -LO https://github.com/BurntSushi/ripgrep/releases/download/12.1.1/ripgrep_12.1.1_amd64.deb' \
-    'sudo dpkg -i ripgrep_12.1.1_amd64.deb' \
+    'curl -LO https://github.com/BurntSushi/ripgrep/releases/download/13.0.0/ripgrep_13.0.0_amd64.deb' \
+    'sudo dpkg -i ripgrep_13.0.0_amd64.deb' \
     >/dev/null 2>&1 &
     spinner
 
-    rm -rf ripgrep_12.1.1_amd64.deb
+    rm -rf ripgrep_13.0.0_amd64.deb
   fi
 }
 
@@ -382,13 +370,13 @@ install_zsh() {
     spinner
 
   while true; do
-    read -p "Do you want to install Nerd-Fonts? (Hack) [Y/n]" yn
+    read -p "Do you want to install Nerd-Fonts? [Y/n]" yn
     case $yn in
     [Yy]*)
-      echo "install nerd font .."
+      echo "installing Nerd Font (Hack, FiraCode) ..."
       custom_install_wrapper \
       'git clone --depth=1 https://github.com/ryanoasis/nerd-fonts.git' \
-      'nerd-fonts/install.sh Hack' \
+      'nerd-fonts/install.sh Hack, FiraCode' \
       >/dev/null 2>&1 &
       spinner
 
@@ -402,6 +390,7 @@ install_zsh() {
 install_tmux() {
   local pac="tmux"
   check_package_installed ${pac}
+
   if [ "${retVal}" = "True" ]; then
     echo -e "${COLOR_GREEN}${pac} is already installed${COLOR_NONE}"
   elif [ "${retVal}" == "False" ]; then
@@ -415,7 +404,7 @@ install_tmux() {
   if [ -f "${HOME}/${file}" ]; then
     while true; do
       echo " "
-      read -p "${file} is already existed, overwrite it? [Y/n]" yn
+      read -p "${file} is already existed, Overwrite it? [Y/n]" yn
       case $yn in
       [Yy]*)
         cp -v tmux.conf ${HOME}/.tmux.conf
@@ -428,9 +417,9 @@ install_tmux() {
     cp -v tmux.conf ${HOME}/.tmux.conf
   fi
 
-  echo -e "instaling tmux plugin manager (tpm)"
+  echo -e "installing Tmux Plugin Manager (tpm)"
   custom_install_wrapper \
-  'git clone https://github.com/tmux-plugins/tpm ~/.tmux/plugins/tpm' \
+  'git clone --depth=1 https://github.com/tmux-plugins/tpm ~/.tmux/plugins/tpm' \
   '~/.tmux/plugins/tpm/scripts/install_plugins.sh' \
   >/dev/null 2>&1 &
   spinner
@@ -439,31 +428,34 @@ install_tmux() {
 install_lazygit() {
   local pac="lazygit"
   check_package_installed ${pac}
+
   if [ "${retVal}" = "True" ]; then
     echo -e "${COLOR_GREEN}${pac} is already installed${COLOR_NONE}"
     sleep 1
     return
   elif [ "${retVal}" == "False" ]; then
     echo -e "${COLOR_RED}${pac} is not installed${COLOR_NONE}"
-    echo "install lazygit.."
-    #'export LAZYGIT_VERSION=$(curl -s "https://api.github.com/repos/jesseduffield/lazygit/releases/latest" | grep -Po '"tag_name": "v\K[^"]*')' \
-    #'curl -Lo lazygit.tar.gz "https://github.com/jesseduffield/lazygit/releases/latest/download/lazygit_${LAZYGIT_VERSION}_Linux_x86_64.tar.gz"' \
+    echo "installing lazygit.."
+
     custom_install_wrapper \
-    'curl -Lo lazygit.tar.gz "https://github.com/jesseduffield/lazygit/releases/latest/download/lazygit_0.37.0_Linux_x86_64.tar.gz"' \
+    'export LAZYGIT_VERSION=$(curl -s "https://api.github.com/repos/jesseduffield/lazygit/releases/latest" | grep -Po '"'"'\"tag_name\": \"v\K[^\"]*'"'"')' \
+    'curl -Lo lazygit.tar.gz "https://github.com/jesseduffield/lazygit/releases/latest/download/lazygit_${LAZYGIT_VERSION}_Linux_x86_64.tar.gz"' \
     'tar xf lazygit.tar.gz lazygit' \
     'sudo install lazygit /usr/local/bin' \
-    dev/null 2>&1 &
+    >/dev/null 2>&1 &
     spinner
+
   fi
 
-  rm -rf lazygit.tar.gz
+  rm -rf lazygit.tar.gz lazygit
   echo -e "${COLOR_GREEN}${pac} has successfully installed!${COLOR_NONE}"
   lazygit --version
+
   sleep 5
 }
 
 install_golang() {
-  local go_ver=1.15.8
+  local go_ver=1.20.4
 
   if ! command -v go &>/dev/null; then
     echo >&2 "go is not installed"
