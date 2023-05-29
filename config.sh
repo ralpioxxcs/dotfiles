@@ -1,7 +1,7 @@
 #!/bin/bash
 
 #########################
-# Bash colors
+# Colors
 COLOR_NONE='\033[0m'
 COLOR_BLACK='\033[0;30m'
 COLOR_RED='\033[0;31m'
@@ -26,6 +26,7 @@ declare -r RETURN_TRUE=1
 declare -r RETURN_FALSE=0
 
 #########################
+
 ## Runtime variables
 os_type=$(uname)
 sudoPW=""
@@ -34,6 +35,7 @@ spin='-\|/'
 
 ################################################################
 
+## Entrypoint
 main() {
   sudo -S true < /dev/null 2> /dev/null
   if [ $? != 0 ]; then
@@ -49,7 +51,7 @@ main() {
 
   while true; do
     clear
-    echo "# select categories"
+    echo "# Select categories"
     echo "[1] terminal"
     echo "[2] editors"
     echo "[3] languages"
@@ -78,7 +80,7 @@ main() {
 ##########################################
 
 check_preinstalled_packages() {
-  local prerequsite_pacakges=("curl", "zsh", "lua5.2")
+  local prerequsite_pacakges=("curl", "zsh", "lua5.3")
   echo " "
   echo "check & install prerequisite packages.."
   apt_install_wrapper curl wget lua5.2 >/dev/null 2>&1 &
@@ -316,25 +318,33 @@ install_neovim() {
 
 install_zsh() {
   local pac="zsh"
+
   check_package_installed ${pac}
+
+  # Skip install zsh
   if [ "${retVal}" = "True" ]; then
     echo -e "${COLOR_GREEN}${pac} is already installed${COLOR_NONE}"
   elif [ "${retVal}" == "False" ]; then
     echo -e "${COLOR_RED}${pac} is not installed${COLOR_NONE}"
+
     printf "installing zsh.."
     apt_install_wrapper ${pac} >/dev/null 2>&1 &
     spinner
+
+    # verify zsh
     zsh --version
     chsh -s $(which zsh)
   fi
 
   # copy dotfile (zshrc, aliases)
-  cp -v .zshrc ${HOME}/.zshrc
-  cp -v .aliases ${HOME}/.aliases
+  printf "Copy zshrc, aliases"
+  cp -av zshrc ${HOME}/.zshrc
+  cp -av aliases ${HOME}/.aliases
 
   # oh-my-zsh configuration
   if [ ! -d "${HOME}/.oh-my-zsh" ]; then
     echo -e "${COLOR_RED}oh-my-zsh is not installed${COLOR_NONE}"
+
     custom_install_wrapper \
     'sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"' \
     >/dev/null 2>&1 &
@@ -343,10 +353,20 @@ install_zsh() {
     echo -e "${COLOR_GREEN}oh-my-zsh is already installed${COLOR_NONE}"
   fi
 
-  zsh_plugins=("zsh-completions" "zsh-syntax-highlighting" "zsh-autosuggestions", "spaceship-prompt", "fzf")
+  zsh_plugins=(
+    "zsh-completions" 
+    "zsh-syntax-highlighting" 
+    "zsh-autosuggestions", 
+    "spaceship-prompt", 
+    "fzf"
+  )
 
-  # install plugins
-  # -- completion, syntax-highligting, autosuggestions, fzf
+  # Install plugins
+  # -- zsh-completion, 
+  # -- zsh-syntax-highligting, 
+  # -- zsh-autosuggestions, 
+  # -- fzf-tab,
+  # -- spaceship-prompt
   #----------------------------------------------------------------------------------------
   echo -e "${COLOR_GREEN}install oh-my-zsh plugins${COLOR_NONE}"
   custom_install_wrapper \
@@ -356,7 +376,7 @@ install_zsh() {
     'git clone --depth=1 https://github.com/Aloxaf/fzf-tab ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/fzf-tab' \
     'git clone --depth=1 https://github.com/spaceship-prompt/spaceship-prompt.git ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/themes/spaceship-prompt' \
     'ln -s ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/themes/spaceship-prompt/spaceship.zsh-theme ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/themes/spaceship.zsh-theme' \
-    'git clone --depth 1 https://github.com/junegunn/fzf.git ~/.fzf' \
+    'git clone --depth=1 https://github.com/junegunn/fzf.git ~/.fzf' \
     'yes | ~/.fzf/install' \
     >/dev/null 2>&1 &
     spinner

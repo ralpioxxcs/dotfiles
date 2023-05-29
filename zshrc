@@ -1,57 +1,108 @@
 # Path to your oh-my-zsh installation.
 export ZSH=$HOME/.oh-my-zsh
 
-# [[Env]]
-export LANG=en_US.UTF-8
-export LC_ALL=en_US.UTF-8
-
-#export BAT_THEME="Dracula"
-
+# Paths
 export GOROOT=/usr/local/go
 export PATH=${PATH}:${GOROOT}/bin:${ZSH_CUSTOM}/plugins/git-fuzzy/bin:${HOME}/.local/bin
 export PATH=${PATH}:$(go env GOPATH)/bin
-
+export PATH=${PATH}:/usr/local/cuda/bin
 #export PATH=${PATH}:${HOME}/.cargo/bin
 #source ${HOME}/.cargo/env
 
-export PATH=${PATH}:/usr/local/cuda/bin
-#export PATH=${PATH}:${HOME}/.rbenv/bin
-
-#eval "$(rbenv init -)"
-#source $(dirname $(gem which colorls))/tab_complete.sh
+# Locale
+export LANG=en_US.UTF-8
+export LC_ALL=en_US.UTF-8
+#export BAT_THEME="Dracula"
 
 test -r ~/.dir_colors && eval $(dircolors ~/.dir_colors)
 
-# Zsh variables
+# ZSH variables
 ZSH_THEME="spaceship"
-CASE_SENSITIVE="true"
-HYPHEN_INSENSITIVE="true"
-ENABLE_CORRECTION="true"
-COMPLETION_WAITING_DOTS="true"
-HIST_STAMPS="yyyy-mm-dd"
 
-# Zsh plugins
+# ZSH plugins variables
+ZSH_TMUX_AUTOSTART=false
+ZSH_TMUX_AUTOSTART_ONCE=true
+ZSH_TMUX_AUTOCONNECT=true
+ZSH_TMUX_CONFIG=$HOME/.tmux.conf
+ZSH_TMUX_DEFAULT_SESSION_NAME="main"
+
+# ZSH plugins
 plugins=(
   git
 
-  # cli support
+  # CLI support
+  tmux
   fzf
   fzf-tab
-  last-working-dir 
+  last-working-dir
   zsh-autosuggestions
-  zsh-syntax-highlighting 
+  zsh-syntax-highlighting
   zsh-interactive-cd
-  dotenv
 
-  # docker
+  rsync         # https://github.com/ohmyzsh/ohmyzsh/tree/master/plugins/rsync
+  jump          # https://github.com/ohmyzsh/ohmyzsh/tree/master/plugins/jump
+
+  # aliases
+  debian        # https://github.com/ohmyzsh/ohmyzsh/tree/master/plugins/debian
+  golang        # https://github.com/ohmyzsh/ohmyzsh/tree/master/plugins/golang
+
+  # Docker
   docker
   docker-compose
+
+  dotenv
+  cp
+
+  #chucknorris
 )
 
+SPACESHIP_PROMPT_ASYNC=true
+SPACESHIP_PROMPT_ADD_NEWLINE=true
+SPACESHIP_PROMPT_SEPARATE_LINE=true
 
-#-----------------------------------------------
+SPACESHIP_USER_SHOW=always
 
-# [[Configs]]
+SPACESHIP_DIR_SHOW=true
+SPACESHIP_DIR_TRUNC=5
+SPACESHIP_DIR_TRUNC_PREFIX=".../"
+
+SPACESHIP_HOST_SHOW=true
+SPACESHIP_HOST_SHOW_FULL=true
+
+SPACESHIP_GIT_SHOW=true
+SPACESHIP_GIT_ORDER=(git branch git_status)
+
+SPACESHIP_GOLANG_SHOW=true
+
+SPACESHIP_LUA_SHOW=true
+SPACESHIP_LUA_ASYNC=false
+
+SPACESHIP_CHAR_SYMBOL=""
+SPACESHIP_CHAR_SUFFIX=" "
+
+SPACESHIP_EXIT_CODE_SHOW=true
+
+# Spaceship prompt config
+SPACESHIP_PROMPT_ORDER=(
+  user          # Username section
+  dir           # Current directory section
+  host          # Hostname section
+  git           # Git section (git_branch + git_status)
+  package       # Package version
+  golang        # Go section
+  lua           # Lua section
+  docker        # Docker section
+  line_sep      # Line break
+  char          # Prompt character
+)
+
+SPACESHIP_RPROMPT_ORDER=(
+    jobs
+    exit_code
+)
+
+# Configs
+
 if [[ $TERM == xterm ]]; then 
   TERM=xterm-256color; 
 fi
@@ -66,36 +117,8 @@ if [[ -f ~/.fzf.zsh ]]; then
   source ~/.fzf.zsh
 fi
 
-# [[Spaceship prompt config]]
-SPACESHIP_PROMPT_ORDER=(
-#  time          # Time stamps section
-  user          # Username section
-  dir           # Current directory section
-  host          # Hostname section
-  git           # Git section (git_branch + git_status)
-  package       # Package version
-  golang        # Go section
-  docker        # Docker section
-#  vi_mode       # Vi-mode indicator
-#  jobs          # Background jobs indicator
-#  exit_code     # Exit code section
-  line_sep      # Line break
-  char          # Prompt character
-)
-
-SPACESHIP_RPROMPT_ORDER=(
-    jobs
-    exit_code
-)
-
-# SPACESHIP_TIME_SHOW=true
-# SPACESHIP_USER_SHOW=always
-SPACESHIP_CHAR_SYMBOL=""
-SPACESHIP_CHAR_SUFFIX=" "
-SPACESHIP_EXIT_CODE_SHOW=true
-
-# actually load
-source "${ZSH}/oh-my-zsh.sh"
+# Actually load
+source $ZSH/oh-my-zsh.sh
 
 #-----------------------------------------------
 
