@@ -118,7 +118,6 @@ check_binary_is_exist() {
   binName=${1}
 }
 
-
 apt_install_wrapper() {
   packages=" "
   for var in "$@"
@@ -128,6 +127,13 @@ apt_install_wrapper() {
   echo ${packages}
 
   echo $sudoPW | sudo -S apt install -y ${packages}
+}
+
+pip_install_wrapper() {
+  for var in "$@"
+  do
+    pip install ${var}
+  done
 }
 
 custom_install_wrapper() {
@@ -222,6 +228,7 @@ languages() {
 install_neovim() {
   local pac="neovim"
   check_package_installed ${pac}
+
   if [ "${retVal}" = "True" ]; then
     echo -e "${COLOR_GREEN}${pac} is already installed${COLOR_NONE}"
   elif [ "${retVal}" == "False" ]; then
@@ -242,11 +249,11 @@ install_neovim() {
 
   if [ -d "${HOME}/.config/nvim" ]; then
     while true; do
-      read -p "neovim config directory is already existed. Overwrite it? [Y/n]" yn
+      read -p "config directory is already existed. Replace it? [Y/n]" yn
       case $yn in
       [Yy]*)
-        mkdir -p ${HOME}/.config/
-        rsync -azvh neovim ${HOME}/.config/nvim
+        rm -rf ${HOME}/.config/nvim
+        rsync -azvh neovim/* ${HOME}/.config/nvim
         nvim -c "Lazy install"
         break;;
       [Nn]*) break;;
@@ -255,25 +262,9 @@ install_neovim() {
     done
   else
     mkdir -p ${HOME}/.config/
-    rsync -azvh neoim ${HOME}/.config/nvim
+    rsync -azvh neovim/* ${HOME}/.config/nvim
     nvim -c "Lazy install"
   fi
-
-  echo -e "${COLOR_GREEN}install dependencies ${COLOR_NONE}"
-
-  # local pac="nodejs"
-  # check_package_installed ${pac}
-  # if [ "${retVal}" = "True" ]; then
-  #   echo -e "${COLOR_GREEN}${pac} is already installed${COLOR_NONE}"
-  # elif [ "${retVal}" == "False" ]; then
-  #   echo -e "${COLOR_RED}${pac} is not installed${COLOR_NONE}"
-  #   printf "installing ${pac}"
-  #   custom_install_wrapper \
-  #   'curl -fsSL https://deb.nodesource.com/setup_lts.x | sudo -E bash -' \
-  #   'sudo apt-get install -y nodejs' \
-  #   >/dev/null 2>&1 &
-  #   spinner
-  # fi
 
   # TODO: universal-ctags (https://github.com/universal-ctags/ctags)
   local pac="exuberant-ctags"
@@ -283,25 +274,24 @@ install_neovim() {
   elif [ "${retVal}" == "False" ]; then
     echo -e "${COLOR_RED}${pac} is not installed${COLOR_NONE}"
     printf "installing ${pac}"
-    apt_install_wrapper exuberant-ctags 2>&1 &
+    apt_install_wrapper ${pac} >/dev/null 2>&1 &
     spinner
   fi
 
-  local pac="ripgrep"
+  pip_install_wrapper "cmake-language-server"
+
+  local pac="python3-venv"
   check_package_installed ${pac}
   if [ "${retVal}" = "True" ]; then
     echo -e "${COLOR_GREEN}${pac} is already installed${COLOR_NONE}"
   elif [ "${retVal}" == "False" ]; then
     echo -e "${COLOR_RED}${pac} is not installed${COLOR_NONE}"
     printf "installing ${pac}"
-    custom_install_wrapper \
-    'curl -LO https://github.com/BurntSushi/ripgrep/releases/download/13.0.0/ripgrep_13.0.0_amd64.deb' \
-    'sudo dpkg -i ripgrep_13.0.0_amd64.deb' \
-    >/dev/null 2>&1 &
+    apt_install_wrapper ${pac} >/dev/null 2>&1 &
     spinner
-
-    rm -rf ripgrep_13.0.0_amd64.deb
   fi
+
+  sleep 3
 }
 
 install_zsh() {
@@ -376,7 +366,8 @@ install_zsh() {
       echo "installing Nerd Font (Hack, FiraCode) ..."
       custom_install_wrapper \
       'git clone --depth=1 https://github.com/ryanoasis/nerd-fonts.git' \
-      'nerd-fonts/install.sh Hack, FiraCode' \
+      'nerd-fonts/install.sh FiraCode' \
+      'nerd-fonts/install.sh Hack' \
       >/dev/null 2>&1 &
       spinner
 
