@@ -3,6 +3,7 @@
 local servers = {
   -- c/c++
   "clangd",
+  "cmake",
 
   -- golang
   "gopls",
@@ -17,12 +18,14 @@ local servers = {
   "tsserver",
 
   -- scripts
-  "awk_ls",
+  "lua_ls",
   "bashls",
 
   -- markup
   "jsonls",
-  "yamlls"
+  "yamlls",
+
+  "dockerls"
 }
 
 -- 아래 순서대로 setup 해야함
@@ -35,9 +38,9 @@ require("mason").setup({
 	ui = {
 		border = "none",
 		icons = {
-			package_installed = "◍",
-			package_pending = "◍",
-			package_uninstalled = "◍",
+            package_installed = "✓",
+            package_pending = "➜",
+            package_uninstalled = "✗"
 		},
 	},
 	log_level = vim.log.levels.INFO,
@@ -65,16 +68,17 @@ local opts = {}
 -- Apply each server settings
 for _, server in pairs(servers) do
   opts = {
-		on_attach = require("lsp.handlers").on_attach,
-		capabilities = require("lsp.handlers").capabilities,
-	}
-
+    on_attach = require("lsp.handlers").on_attach,
+	capabilities = require("lsp.handlers").capabilities,
+  }
   server = vim.split(server, "@")[1]
 
-	local require_ok, conf_opts = pcall(require, "lsp." .. server)
-	if require_ok then
+  local require_ok, conf_opts = pcall(require, "lsp." .. server)
+
+  if require_ok then
     opts = vim.tbl_deep_extend("force", conf_opts, opts)
-	end
+  end
 
   lspconfig[server].setup(opts)
+
 end
