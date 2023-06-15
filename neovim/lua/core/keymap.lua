@@ -69,7 +69,7 @@ keymap('n', '<leader>sv', ':source $MYVIMRC<CR>', opts)
 --  <leader> + f : Refresh NvimTree
 --  <leader> + n : search NvimTree
 keymap('n', "<leader>e", ":NvimTreeToggle<CR>", opts)
-keymap('n', '<leader>f', ':NvimTreeRefresh<CR>', opts)
+keymap('n', '<leader>f', ':NvimTreeFocus<CR>', opts)
 keymap('n', '<leader>n', ':NvimTreeFindFile<CR>', opts)
 
 -- Tagbar
@@ -77,7 +77,7 @@ keymap('n', '<leader>n', ':NvimTreeFindFile<CR>', opts)
 keymap('n', "<leader>z", ":TagbarToggle<CR>", opts)
 
 -- Telescope
---  Ctrl + f : File files
-keymap('n', "<C-f>", ":Telescope find_files<CR>", opts)
-
-
+--  Ctrl + p : File files
+--  Ctrl + f : Find string
+keymap('n', "<C-p>", ":Telescope find_files<CR>", opts)
+keymap('n', "<C-f>", ":Telescope grep_string<CR>", opts)

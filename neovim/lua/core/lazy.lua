@@ -102,6 +102,13 @@ require("lazy").setup({
   },
 
   -- Which-Key
-  { "folke/which-key.nvim", lazy = true }
+  { "folke/which-key.nvim", lazy = true },
+
+  -- Markdown Preview
+  { "iamcco/markdown-preview.nvim",
+    config = function()
+      vim.fn["mkdp#util#install"]()
+    end,
+  }
 
 })
