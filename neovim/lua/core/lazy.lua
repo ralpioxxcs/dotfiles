@@ -32,7 +32,9 @@ require("lazy").setup({
 
   -- File explorer
   {
-    "kyazdani42/nvim-tree.lua",
+    "nvim-tree/nvim-tree.lua",
+    version = "*",
+    lazy = false,
     dependencies = { "kyazdani42/nvim-web-devicons" },
   },
 
@@ -52,7 +54,7 @@ require("lazy").setup({
   { "lewis6991/gitsigns.nvim" },
 
   -- Indent guide
-  { "lukas-reineke/indent-blankline.nvim" },
+  { "lukas-reineke/indent-blankline.nvim", main = "ibl", opts = {} },
 
   -- Auto pair
   { "windwp/nvim-autopairs" },
