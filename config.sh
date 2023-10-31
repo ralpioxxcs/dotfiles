@@ -367,6 +367,7 @@ install_zsh() {
       custom_install_wrapper \
       'git clone --depth=1 https://github.com/ryanoasis/nerd-fonts.git' \
       'nerd-fonts/install.sh FiraCode' \
+      'nerd-fonts/install.sh SpaceMono' \
       'nerd-fonts/install.sh Hack' \
       >/dev/null 2>&1 &
       spinner

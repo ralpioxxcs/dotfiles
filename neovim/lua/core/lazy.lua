@@ -39,13 +39,13 @@ require("lazy").setup({
   },
 
   -- Status line
-  { 
+  {
     "nvim-lualine/lualine.nvim",
     dependencies = { 'kyazdani42/nvim-web-devicons' },
   },
 
   -- Buffer line
-  { 
+  {
     "akinsho/bufferline.nvim",
     dependencies = { 'kyazdani42/nvim-web-devicons' },
   },
@@ -71,7 +71,7 @@ require("lazy").setup({
   { "preservim/tagbar" },
 
   -- Completions
-  { 
+  {
     "hrsh7th/nvim-cmp",
     dependencies = {
       "hrsh7th/cmp-cmdline",
@@ -98,8 +98,8 @@ require("lazy").setup({
 
   -- Telescope
   {
-    "nvim-telescope/telescope.nvim", 
-    tag = '0.1.1',
+    "nvim-telescope/telescope.nvim",
+    tag = '0.1.4',
     dependencies = { 'nvim-lua/plenary.nvim' }
   },
 
@@ -111,6 +111,9 @@ require("lazy").setup({
     config = function()
       vim.fn["mkdp#util#install"]()
     end,
-  }
+  },
+
+  -- Formatter
+  { "mhartington/formatter.nvim" }
 
 })
