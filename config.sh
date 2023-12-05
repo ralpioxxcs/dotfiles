@@ -156,7 +156,9 @@ spinner() {
 }
 
 ################################################################
-
+#
+# TODO: incremental numbering as a array
+#
 terminal() {
   while true; do
     clear
@@ -164,7 +166,8 @@ terminal() {
     echo -e "[2] tmux"
     echo -e "[3] lazy tools (lazygit, lazydocker)"
     echo -e "[4] github tools (gh, ...)"
-    echo -e "[5] ${COLOR_DARK_GRAY}back${COLOR_NONE}"
+    echo -e "[5] alacritty"
+    echo -e "[6] ${COLOR_DARK_GRAY}back${COLOR_NONE}"
     read ans
 
     if [ "$ans" != "${ans#[1]}" ]; then
@@ -177,6 +180,8 @@ terminal() {
     elif [ "$ans" != "${ans#[4]}" ]; then
       install_github_tools
     elif [ "$ans" != "${ans#[5]}" ]; then
+      install_alacritty
+    elif [ "$ans" != "${ans#[6]}" ]; then
       break
     else
       echo "please answer number"
@@ -467,6 +472,37 @@ install_github_tools() {
 
   fi
 
+}
+
+install_alacritty() {
+  local pac="alacritty"
+  check_package_installed ${pac}
+
+  if [ "${retVal}" = "True" ]; then
+    echo -e "${COLOR_GREEN}${pac} is already installed${COLOR_NONE}"
+    sleep 1
+    return
+  elif [ "${retVal}" == "False" ]; then
+    echo -e "${COLOR_RED}${pac} is not installed${COLOR_NONE}"
+    echo "installing alacritty.."
+
+    # check cargo
+    check_package_installed "cargo"
+    if [ "${retVal}" == "False" ]; then
+      curl https://sh.rustup.rs -sSf | sh
+    fi
+
+    custom_install_wrapper \
+    'git clone https://github.com/alacritty/alacritty /tmp/alacirtty'
+    'cargo install alacritty' \
+    'sudo tic -xe alacritty,alacritty-direct /tmp/alacritty/extra/alacritty.info' \
+    'sudo cp /tmp/alacritty/extra/logo/alacritty-term.svg /usr/share/pixmaps/Alacritty.svg' \
+    'sudo desktop-file-install /tmp/alacritty/extra/linux/Alacritty.desktop' \
+    'sudo update-desktop-database' \
+    >/dev/null 2>&1 &
+    spinner
+
+  fi
 }
 
 install_lazygit() {
