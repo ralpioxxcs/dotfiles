@@ -1,4 +1,4 @@
--- Bootstrap lazy.nvim
+-- Bootstrap for lazy.nvim
 local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
 
 if not vim.loop.fs_stat(lazypath) then
@@ -14,27 +14,57 @@ end
 
 vim.opt.rtp:prepend(lazypath)
 
--- Setup plugins
+--
+-- [Setup plugins]
+-- 
 require("lazy").setup({
+
   -- Colorscheme
+  { "EdenEast/nightfox.nvim" },
+
+  -- Language Server Protocl (LSP)
+  { "neovim/nvim-lspconfig" },
+  { "williamboman/mason.nvim" },
+  { "williamboman/mason-lspconfig.nvim" },
+
+  -- Completions
   {
-    "EdenEast/nightfox.nvim",
+    "hrsh7th/nvim-cmp",
+    dependencies = {
+      "hrsh7th/cmp-cmdline",
+      "hrsh7th/cmp-nvim-lsp",
+      "hrsh7th/cmp-path",
+      "hrsh7th/cmp-buffer"
+    },
   },
 
-  -- Useful Lua functions
-  { "nvim-lua/plenary.nvim" },
+  -- Treesitter
+  { "nvim-treesitter/nvim-treesitter", build = ':TSUpdate' },
 
-  -- Dashboard
+  -- Snippet Engine
   {
-    "goolord/alpha-nvim",
-    dependencies = { "kyazdani42/nvim-web-devicons" },
+	"L3MON4D3/LuaSnip",
+	-- follow latest release.
+	version = "v2.*", -- Replace <CurrentMajor> by the latest released major (first number of latest release)
+	-- install jsregexp (optional!).
+	build = "make install_jsregexp",
+    dependencies = { "rafamadriz/friendly-snippets" }
   },
+
+  -- LuaSnip for completion
+  { 'saadparwaiz1/cmp_luasnip' },
 
   -- File explorer
   {
     "nvim-tree/nvim-tree.lua",
     version = "*",
     lazy = false,
+    dependencies = { "kyazdani42/nvim-web-devicons" },
+  },
+
+  -- Dashboard
+  {
+    "goolord/alpha-nvim",
     dependencies = { "kyazdani42/nvim-web-devicons" },
   },
 
@@ -59,35 +89,10 @@ require("lazy").setup({
   -- Auto pair
   { "windwp/nvim-autopairs" },
 
-  -- LSP
-  { "neovim/nvim-lspconfig" },
-  { "williamboman/mason.nvim" },
-  { "williamboman/mason-lspconfig.nvim" },
-
-  -- Treesitter
-  { "nvim-treesitter/nvim-treesitter", build = ':TSUpdate' },
-
   -- Tag viewer
   { "preservim/tagbar" },
 
-  -- Completions
-  {
-    "hrsh7th/nvim-cmp",
-    dependencies = {
-      "hrsh7th/cmp-cmdline",
-      "hrsh7th/cmp-nvim-lsp",
-      "hrsh7th/cmp-path",
-      "hrsh7th/cmp-buffer",
-      "saadparwaiz1/cmp_luasnip",
-    },
-  },
-
-  -- Snippets
-  { "L3MON4D3/LuaSnip" },
-  { "rafamadriz/friendly-snippets" },
-
-  -- Multiline selection
-  -- https://github.com/mg979/vim-visual-multi
+  -- Multiline selection (https://github.com/mg979/vim-visual-multi)
   { "mg979/vim-visual-multi" },
 
   -- Comment

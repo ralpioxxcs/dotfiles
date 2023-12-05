@@ -1,0 +1,34 @@
+import = [ "~/.config/alacritty/themes/nord.toml" ]
+
+window.opacity = 0.95
+window.padding.x = 10
+window.padding.y = 10
+window.decorations = "full"
+window.startup_mode = "Windowed"
+window.title = "JJ"
+window.dynamic_title = true
+window.decorations_theme_variant = 'Dark'
+
+[font] 
+normal = { family = "Hack Nerd Font", style = "Retina" }
+bold = { family = "Hack Nerd Font", style = "Bold" }
+
+[cursor]
+  style.shape = "Underline"
+  style.blinking = "On"
+  thickness = 1.0
+
+[keyboard]
+bindings = [
+  # windows
+  { key = "N", mods = "Control | Shift", action = "CreateNewWindow" },
+
+  # full-screen
+  { key = "F11", action = "ToggleFullScreen" },
+
+  # font size
+  { key = "+", mods = "Control", action = "IncreaseFontSize" },
+  { key = "-", mods = "Control", action = "DecreaseFontSize" },
+
+  # vi-mode (Ctrl + Shift + Space)
+]

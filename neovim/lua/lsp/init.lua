@@ -12,7 +12,6 @@ lspconfig.rust_analyzer.setup {
   },
 }
 
-
 -- Global mappings.
 -- See `:help vim.diagnostic.*` for documentation on any of the below functions
 vim.keymap.set('n', '<space>e', vim.diagnostic.open_float)
@@ -52,4 +51,4 @@ vim.api.nvim_create_autocmd('LspAttach', {
 })
 
 require("lsp.mason")
---require("lsp.handlers").setup()
+require("lsp.handlers").setup()

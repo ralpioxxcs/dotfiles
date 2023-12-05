@@ -55,7 +55,7 @@ main() {
     echo "[1] terminal"
     echo "[2] editors"
     echo "[3] languages"
-    echo "[4] auto"
+    echo "[4] tools"
     echo "[5] exit"
     read ans
 
@@ -66,7 +66,7 @@ main() {
     elif [ "$ans" != "${ans#[3]}" ]; then
       languages
     elif [ "$ans" != "${ans#[4]}" ]; then
-      echo "auto"
+      tools
     elif [ "$ans" != "${ans#[5]}" ]; then
       exit 1
     else
@@ -80,7 +80,7 @@ main() {
 ##########################################
 
 check_preinstalled_packages() {
-  local prerequsite_pacakges=("curl", "zsh", "lua5.3")
+  local prerequsite_pacakges=("curl", "zsh", "lua5.3", "python-pip", "python3-pip", "build-essential", "htop", "vim")
   echo " "
   echo "check & install prerequisite packages.."
   apt_install_wrapper curl wget lua5.2 >/dev/null 2>&1 &
@@ -101,7 +101,6 @@ check_package_installed() {
   elif [ ${os_type} == "Linux" ]; then
     ok=$(dpkg-query -W --showformat='${Status}\n' ${pkgName} | grep "install ok installed")
   fi
-
 
   if [ -n "${ok}" ]; then
     retVal="True"
@@ -132,7 +131,7 @@ apt_install_wrapper() {
 pip_install_wrapper() {
   for var in "$@"
   do
-    pip install ${var}
+    pip3 install ${var}
   done
 }
 
@@ -163,8 +162,9 @@ terminal() {
     clear
     echo -e "[1] zsh & oh-my-zsh"
     echo -e "[2] tmux"
-    echo -e "[3] lazygit"
-    echo -e "[4] ${COLOR_DARK_GRAY}back${COLOR_NONE}"
+    echo -e "[3] lazy tools (lazygit, lazydocker)"
+    echo -e "[4] github tools (gh, ...)"
+    echo -e "[5] ${COLOR_DARK_GRAY}back${COLOR_NONE}"
     read ans
 
     if [ "$ans" != "${ans#[1]}" ]; then
@@ -173,7 +173,10 @@ terminal() {
       install_tmux
     elif [ "$ans" != "${ans#[3]}" ]; then
       install_lazygit
+      install_lazydocker
     elif [ "$ans" != "${ans#[4]}" ]; then
+      install_github_tools
+    elif [ "$ans" != "${ans#[5]}" ]; then
       break
     else
       echo "please answer number"
@@ -207,7 +210,8 @@ languages() {
     clear    
     echo "[1] golang"
     echo "[2] rust"
-    echo -e "[3] ${COLOR_DARK_GRAY}back${COLOR_NONE}"
+    echo "[3] node"
+    echo -e "[4] ${COLOR_DARK_GRAY}back${COLOR_NONE}"
     read ans
 
     if [ "$ans" != "${ans#[1]}" ]; then
@@ -215,6 +219,28 @@ languages() {
     elif [ "$ans" != "${ans#[2]}" ]; then
       # config_rust
       echo "skip"
+    elif [ "$ans" != "${ans#[3]}" ]; then
+      install_node 18
+    elif [ "$ans" != "${ans#[4]}" ]; then
+      break
+    else
+      echo "please answer number"
+    fi
+  done
+}
+
+tools() {
+  while true; do
+    clear    
+    echo "[1] postman"
+    echo "[2] obsidian"
+    echo -e "[3] ${COLOR_DARK_GRAY}back${COLOR_NONE}"
+    read ans
+
+    if [ "$ans" != "${ans#[1]}" ]; then
+      install_postman
+    elif [ "$ans" != "${ans#[2]}" ]; then
+      install_obsidian
     elif [ "$ans" != "${ans#[3]}" ]; then
       break
     else
@@ -417,6 +443,32 @@ install_tmux() {
   spinner
 }
 
+install_github_tools() {
+  local pac="gh"
+  check_package_installed ${pac}
+
+  if [ "${retVal}" = "True" ]; then
+    echo -e "${COLOR_GREEN}${pac} is already installed${COLOR_NONE}"
+    sleep 1
+    return
+  elif [ "${retVal}" == "False" ]; then
+    echo -e "${COLOR_RED}${pac} is not installed${COLOR_NONE}"
+    echo "installing gh.."
+
+    type -p curl >/dev/null || (sudo apt update && sudo apt install curl -y)
+
+    custom_install_wrapper \
+    'curl -fsSL https://cli.github.com/packages/githubcli-archive-keyring.gpg | sudo dd of=/usr/share/keyrings/githubcli-archive-keyring.gpg' \
+    'echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/githubcli-archive-keyring.gpg] https://cli.github.com/packages stable main" | sudo tee /etc/apt/sources.list.d/github-cli.list' \
+    'sudo apt update' \
+    'sudo apt install gh -y' \
+    >/dev/null 2>&1 &
+    spinner
+
+  fi
+
+}
+
 install_lazygit() {
   local pac="lazygit"
   check_package_installed ${pac}
@@ -449,6 +501,56 @@ install_lazygit() {
   lazygit --version
 
   sleep 5
+}
+
+install_lazydocker() {
+  local pac="lazydocker"
+  check_package_installed ${pac}
+
+  if [ "${retVal}" = "True" ]; then
+    echo -e "${COLOR_GREEN}${pac} is already installed${COLOR_NONE}"
+    sleep 1
+    return
+  elif [ "${retVal}" == "False" ]; then
+    echo -e "${COLOR_RED}${pac} is not installed${COLOR_NONE}"
+    echo "installing lazygit.."
+
+    custom_install_wrapper \
+    'curl https://raw.githubusercontent.com/jesseduffield/lazydocker/master/scripts/install_update_linux.sh | bash' \
+    >/dev/null 2>&1 &
+    spinner
+  fi
+
+  sleep 5
+}
+
+install_node() {
+  local pac="nvm"
+  local version=${1}
+  check_package_installed ${pac}
+
+  if [ "${retVal}" = "True" ]; then
+    echo -e "${COLOR_GREEN}${pac} is already installed${COLOR_NONE}"
+    sleep 1
+  elif [ "${retVal}" == "False" ]; then
+    echo -e "${COLOR_RED}${pac} is not installed${COLOR_NONE}"
+    echo "installing nvm.."
+
+    custom_install_wrapper \
+    'curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.5/install.sh | bash' \
+    >/dev/null 2>&1 &
+    spinner
+
+    export NVM_DIR="$HOME/.nvm" >> ~/.zshrc
+    [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh" >> ~/.zshrc
+    [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion" >> ~/.zshrc
+
+    source ~/.zshrc
+  fi
+
+  nvm list
+  nvm install ${version}
+  nvm use ${version}
 }
 
 install_golang() {
@@ -500,6 +602,29 @@ install_golang() {
   export PATH=${PATH}:/usr/local/go/bin
   export GOROOT=/usr/local/go
   export GOPATH=${HOME}/gowork
+}
+
+install_postman() {
+  cd /tmp || exit
+  echo "Download Postman .."
+
+  sudo rm -rf /opt/Postman
+
+  tar -C /tmp/ -xzf <(curl -L https://dl.pstmn.io/download/latest/linux64) && sudo mv /tmp/Postman /opt/
+
+  echo "Creating .desktop file..."
+  sudo tee -a /usr/share/applications/postman.desktop << END
+[Desktop Entry]
+Encoding=UTF-8
+Name=Postman
+Exec=/opt/Postman/Postman
+Icon=/opt/Postman/app/resources/app/assets/icon.png
+Terminal=false
+Type=Application
+Categories=Development;
+END
+
+  echo "Installation completed successfully."
 }
 
 ##-------------------------------------------------------------------------##

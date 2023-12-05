@@ -1,11 +1,12 @@
--- Import lua modules
+-- Import Lua modules
 require("core/lazy")
 require("core/options")
 require("core/keymap")
 
+-- Load LSP configuration
 require("lsp")
 
--- Load plugins
+-- Load plugin configurations
 require("plugins/nightfox")
 require("plugins/alpha-nvim")
 require("plugins/lualine")

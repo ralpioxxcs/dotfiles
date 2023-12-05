@@ -1,5 +1,5 @@
 -- Change Leader key to a <SPACE BAR>
-vim.g.mapleader = ' '
+vim.g.mapleader = ','
 vim.g.maplocalleader = "\\"
 
 -- Common keymap options
