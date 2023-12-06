@@ -81,3 +81,8 @@ keymap('n', "<leader>z", ":TagbarToggle<CR>", opts)
 --  Ctrl + f : Find string
 keymap('n', "<C-p>", ":Telescope find_files<CR>", opts)
 keymap('n', "<C-f>", ":Telescope grep_string<CR>", opts)
+
+-- Formatter
+-- <leader> + f : Formatting
+keymap('n', "<leader>f", ":Format<CR>", opts)
+keymap('n', "<leader>F", ":FormatWrite<CR>", opts)

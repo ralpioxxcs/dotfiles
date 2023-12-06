@@ -37,13 +37,13 @@ spin='-\|/'
 
 ## Entrypoint
 main() {
-  sudo -S true < /dev/null 2> /dev/null
+  sudo -S true </dev/null 2>/dev/null
   if [ $? != 0 ]; then
     read -s -p "Enter password for sudo: " sudoPW
     echo -n ${sudoPW} | sudo -S ls /root >/dev/null 2>&1
     if [ $? != 0 ]; then
       echo -e "${COLOR_RED}sudo password is incorrect${COLOR_NONE}"
-      exit    
+      exit
     fi
   fi
 
@@ -80,20 +80,29 @@ main() {
 ##########################################
 
 check_preinstalled_packages() {
-  local prerequsite_pacakges=("curl", "zsh", "lua5.3", "python-pip", "python3-pip", "build-essential", "htop", "vim")
+  local prerequsite_pacakges=(
+    "curl",
+    "zsh",
+    "lua5.3",
+    "python-pip",
+    "python3-pip",
+    "build-essential",
+    "htop",
+    "vim",
+    "ripgrep"
+  )
   echo " "
   echo "check & install prerequisite packages.."
   apt_install_wrapper curl wget lua5.2 >/dev/null 2>&1 &
-  spinner 
+  spinner
 }
 
 check_package_installed() {
   pkgName=${1}
 
-  if command -v ${pkgName} &> /dev/null
-  then
+  if command -v ${pkgName} &>/dev/null; then
     retVal="True"
-    return 
+    return
   fi
 
   if [ ${os_type} == "Darwin" ]; then
@@ -119,8 +128,7 @@ check_binary_is_exist() {
 
 apt_install_wrapper() {
   packages=" "
-  for var in "$@"
-  do
+  for var in "$@"; do
     packages+=" ${var}"
   done
   echo ${packages}
@@ -129,30 +137,27 @@ apt_install_wrapper() {
 }
 
 pip_install_wrapper() {
-  for var in "$@"
-  do
+  for var in "$@"; do
     pip3 install ${var}
   done
 }
 
 custom_install_wrapper() {
-  for cmd in "$@"
-  do
+  for cmd in "$@"; do
     eval "${cmd}"
   done
 }
 
 spinner() {
-    pid=$!
-    i=0
-    while kill -0 $pid 2>/dev/null
-    do
-      i=$(( (i+1) %4 ))
-      #printf "${COLOR_CYAN}\r${spin:$i:1}"
-      printf "."
-      sleep .1
-    done
-    echo -e ${COLOR_NONE}
+  pid=$!
+  i=0
+  while kill -0 $pid 2>/dev/null; do
+    i=$(((i + 1) % 4))
+    #printf "${COLOR_CYAN}\r${spin:$i:1}"
+    printf "."
+    sleep .1
+  done
+  echo -e ${COLOR_NONE}
 }
 
 ################################################################
@@ -212,7 +217,7 @@ editors() {
 
 languages() {
   while true; do
-    clear    
+    clear
     echo "[1] golang"
     echo "[2] rust"
     echo "[3] node"
@@ -236,7 +241,7 @@ languages() {
 
 tools() {
   while true; do
-    clear    
+    clear
     echo "[1] postman"
     echo "[2] obsidian"
     echo -e "[3] ${COLOR_DARK_GRAY}back${COLOR_NONE}"
@@ -267,12 +272,12 @@ install_neovim() {
     printf "installing ${pac}"
 
     custom_install_wrapper \
-    'wget https://github.com/neovim/neovim/releases/download/stable/nvim-linux64.tar.gz' \
-    'tar zxvf nvim-linux64.tar.gz' \
-    'sudo mv ./nvim-linux64/bin/nvim /usr/local/bin' \
-    'sudo mv ./nvim-linux64/lib/* /usr/local/lib/' \
-    'sudo mv ./nvim-linux64/share/* /usr/local/share/' \
-    >/dev/null 2>&1 &
+      'wget https://github.com/neovim/neovim/releases/download/stable/nvim-linux64.tar.gz' \
+      'tar zxvf nvim-linux64.tar.gz' \
+      'sudo mv ./nvim-linux64/bin/nvim /usr/local/bin' \
+      'sudo mv ./nvim-linux64/lib/* /usr/local/lib/' \
+      'sudo mv ./nvim-linux64/share/* /usr/local/share/' \
+      >/dev/null 2>&1 &
     spinner
 
     rm -rf nvim-linux64.tar.gz nvim-linux64
@@ -286,8 +291,9 @@ install_neovim() {
         rm -rf ${HOME}/.config/nvim
         rsync -azvh neovim/* ${HOME}/.config/nvim
         nvim -c "Lazy install"
-        break;;
-      [Nn]*) break;;
+        break
+        ;;
+      [Nn]*) break ;;
       *) echo "Please answer yes or no." ;;
       esac
     done
@@ -355,25 +361,25 @@ install_zsh() {
     echo -e "${COLOR_RED}oh-my-zsh is not installed${COLOR_NONE}"
 
     custom_install_wrapper \
-    'sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"' \
-    >/dev/null 2>&1 &
+      'sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"' \
+      >/dev/null 2>&1 &
     spinner
   else
     echo -e "${COLOR_GREEN}oh-my-zsh is already installed${COLOR_NONE}"
   fi
 
   zsh_plugins=(
-    "zsh-completions" 
-    "zsh-syntax-highlighting" 
-    "zsh-autosuggestions", 
-    "spaceship-prompt", 
+    "zsh-completions"
+    "zsh-syntax-highlighting"
+    "zsh-autosuggestions",
+    "spaceship-prompt",
     "fzf"
   )
 
   # Install plugins
-  # -- zsh-completion, 
-  # -- zsh-syntax-highligting, 
-  # -- zsh-autosuggestions, 
+  # -- zsh-completion,
+  # -- zsh-syntax-highligting,
+  # -- zsh-autosuggestions,
   # -- fzf-tab,
   # -- spaceship-prompt
   #----------------------------------------------------------------------------------------
@@ -388,7 +394,7 @@ install_zsh() {
     'git clone --depth=1 https://github.com/junegunn/fzf.git ~/.fzf' \
     'yes | ~/.fzf/install' \
     >/dev/null 2>&1 &
-    spinner
+  spinner
 
   while true; do
     read -p "Do you want to install Nerd-Fonts? [Y/n]" yn
@@ -396,15 +402,16 @@ install_zsh() {
     [Yy]*)
       echo "installing Nerd Font (Hack, FiraCode) ..."
       custom_install_wrapper \
-      'git clone --depth=1 https://github.com/ryanoasis/nerd-fonts.git' \
-      'nerd-fonts/install.sh FiraCode' \
-      'nerd-fonts/install.sh SpaceMono' \
-      'nerd-fonts/install.sh Hack' \
-      >/dev/null 2>&1 &
+        'git clone --depth=1 https://github.com/ryanoasis/nerd-fonts.git' \
+        'nerd-fonts/install.sh FiraCode' \
+        'nerd-fonts/install.sh SpaceMono' \
+        'nerd-fonts/install.sh Hack' \
+        >/dev/null 2>&1 &
       spinner
 
-      break;;
-    [Nn]*) break;;
+      break
+      ;;
+    [Nn]*) break ;;
     *) echo "Please answer yes or no." ;;
     esac
   done
@@ -431,8 +438,9 @@ install_tmux() {
       case $yn in
       [Yy]*)
         cp -v tmux.conf ${HOME}/.tmux.conf
-        break;;
-      [Nn]*) return;;
+        break
+        ;;
+      [Nn]*) return ;;
       *) echo "Please answer yes or no." ;;
       esac
     done
@@ -442,9 +450,9 @@ install_tmux() {
 
   echo -e "installing Tmux Plugin Manager (tpm)"
   custom_install_wrapper \
-  'git clone --depth=1 https://github.com/tmux-plugins/tpm ~/.tmux/plugins/tpm' \
-  '~/.tmux/plugins/tpm/scripts/install_plugins.sh' \
-  >/dev/null 2>&1 &
+    'git clone --depth=1 https://github.com/tmux-plugins/tpm ~/.tmux/plugins/tpm' \
+    '~/.tmux/plugins/tpm/scripts/install_plugins.sh' \
+    >/dev/null 2>&1 &
   spinner
 }
 
@@ -463,11 +471,11 @@ install_github_tools() {
     type -p curl >/dev/null || (sudo apt update && sudo apt install curl -y)
 
     custom_install_wrapper \
-    'curl -fsSL https://cli.github.com/packages/githubcli-archive-keyring.gpg | sudo dd of=/usr/share/keyrings/githubcli-archive-keyring.gpg' \
-    'echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/githubcli-archive-keyring.gpg] https://cli.github.com/packages stable main" | sudo tee /etc/apt/sources.list.d/github-cli.list' \
-    'sudo apt update' \
-    'sudo apt install gh -y' \
-    >/dev/null 2>&1 &
+      'curl -fsSL https://cli.github.com/packages/githubcli-archive-keyring.gpg | sudo dd of=/usr/share/keyrings/githubcli-archive-keyring.gpg' \
+      'echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/githubcli-archive-keyring.gpg] https://cli.github.com/packages stable main" | sudo tee /etc/apt/sources.list.d/github-cli.list' \
+      'sudo apt update' \
+      'sudo apt install gh -y' \
+      >/dev/null 2>&1 &
     spinner
 
   fi
@@ -493,13 +501,13 @@ install_alacritty() {
     fi
 
     custom_install_wrapper \
-    'git clone https://github.com/alacritty/alacritty /tmp/alacirtty'
+      'git clone https://github.com/alacritty/alacritty /tmp/alacirtty'
     'cargo install alacritty' \
-    'sudo tic -xe alacritty,alacritty-direct /tmp/alacritty/extra/alacritty.info' \
-    'sudo cp /tmp/alacritty/extra/logo/alacritty-term.svg /usr/share/pixmaps/Alacritty.svg' \
-    'sudo desktop-file-install /tmp/alacritty/extra/linux/Alacritty.desktop' \
-    'sudo update-desktop-database' \
-    >/dev/null 2>&1 &
+      'sudo tic -xe alacritty,alacritty-direct /tmp/alacritty/extra/alacritty.info' \
+      'sudo cp /tmp/alacritty/extra/logo/alacritty-term.svg /usr/share/pixmaps/Alacritty.svg' \
+      'sudo desktop-file-install /tmp/alacritty/extra/linux/Alacritty.desktop' \
+      'sudo update-desktop-database' \
+      >/dev/null 2>&1 &
     spinner
 
   fi
@@ -518,11 +526,11 @@ install_lazygit() {
     echo "installing lazygit.."
 
     custom_install_wrapper \
-    'export LAZYGIT_VERSION=$(curl -s "https://api.github.com/repos/jesseduffield/lazygit/releases/latest" | grep -Po '"'"'\"tag_name\": \"v\K[^\"]*'"'"')' \
-    'curl -Lo lazygit.tar.gz "https://github.com/jesseduffield/lazygit/releases/latest/download/lazygit_${LAZYGIT_VERSION}_Linux_x86_64.tar.gz"' \
-    'tar xf lazygit.tar.gz lazygit' \
-    'sudo install lazygit /usr/local/bin' \
-    >/dev/null 2>&1 &
+      'export LAZYGIT_VERSION=$(curl -s "https://api.github.com/repos/jesseduffield/lazygit/releases/latest" | grep -Po '"'"'\"tag_name\": \"v\K[^\"]*'"'"')' \
+      'curl -Lo lazygit.tar.gz "https://github.com/jesseduffield/lazygit/releases/latest/download/lazygit_${LAZYGIT_VERSION}_Linux_x86_64.tar.gz"' \
+      'tar xf lazygit.tar.gz lazygit' \
+      'sudo install lazygit /usr/local/bin' \
+      >/dev/null 2>&1 &
     spinner
 
   fi
@@ -552,8 +560,8 @@ install_lazydocker() {
     echo "installing lazygit.."
 
     custom_install_wrapper \
-    'curl https://raw.githubusercontent.com/jesseduffield/lazydocker/master/scripts/install_update_linux.sh | bash' \
-    >/dev/null 2>&1 &
+      'curl https://raw.githubusercontent.com/jesseduffield/lazydocker/master/scripts/install_update_linux.sh | bash' \
+      >/dev/null 2>&1 &
     spinner
   fi
 
@@ -573,13 +581,13 @@ install_node() {
     echo "installing nvm.."
 
     custom_install_wrapper \
-    'curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.5/install.sh | bash' \
-    >/dev/null 2>&1 &
+      'curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.5/install.sh | bash' \
+      >/dev/null 2>&1 &
     spinner
 
-    export NVM_DIR="$HOME/.nvm" >> ~/.zshrc
-    [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh" >> ~/.zshrc
-    [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion" >> ~/.zshrc
+    export NVM_DIR="$HOME/.nvm" >>~/.zshrc
+    [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh" >>~/.zshrc
+    [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion" >>~/.zshrc
 
     source ~/.zshrc
   fi
@@ -649,7 +657,7 @@ install_postman() {
   tar -C /tmp/ -xzf <(curl -L https://dl.pstmn.io/download/latest/linux64) && sudo mv /tmp/Postman /opt/
 
   echo "Creating .desktop file..."
-  sudo tee -a /usr/share/applications/postman.desktop << END
+  sudo tee -a /usr/share/applications/postman.desktop <<END
 [Desktop Entry]
 Encoding=UTF-8
 Name=Postman

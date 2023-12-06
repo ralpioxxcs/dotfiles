@@ -119,6 +119,8 @@ require("lazy").setup({
   },
 
   -- Formatter
-  { "mhartington/formatter.nvim" }
+  { "mhartington/formatter.nvim" },
+
+  { "edluffy/hologram.nvim" }
 
 })
