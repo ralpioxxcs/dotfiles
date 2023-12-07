@@ -3,36 +3,36 @@ if not status_ok then
   return
 end
 
-treesitter.setup({
-  ensure_installed = { 
-    "c", 
+treesitter.setup {
+  ensure_installed = {
+    "c",
     "cpp",
     "make",
-    "cmake", 
+    "cmake",
     "cuda",
 
     "go",
     "gomod",
 
-    "bash", 
-    "python", 
+    "bash",
+    "python",
     "lua",
     "vim",
 
     "javascript",
     "typescript",
     "html",
-    "css", 
+    "css",
 
-    "json", 
-    "yaml", 
-    "markdown", 
+    "json",
+    "yaml",
+    "markdown",
   },
   sync_install = true,
   auto_install = true,
 
   autopairs = {
-    enable = true
+    enable = true,
   },
 
   highlight = {
@@ -41,5 +41,5 @@ treesitter.setup({
 
   indent = {
     enable = true,
-  }
-})
+  },
+}

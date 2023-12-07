@@ -227,7 +227,7 @@ languages() {
     if [ "$ans" != "${ans#[1]}" ]; then
       install_golang
     elif [ "$ans" != "${ans#[2]}" ]; then
-      # config_rust
+      install_rust
       echo "skip"
     elif [ "$ans" != "${ans#[3]}" ]; then
       install_node 18
@@ -595,6 +595,14 @@ install_node() {
   nvm list
   nvm install ${version}
   nvm use ${version}
+}
+
+install_rust() {
+  curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y --profile default
+  
+  echo "export PATH=${HOME}/.cargo/bin:${PATH}" >>${HOME}/.zshrc
+
+  source ${HOME}/.zshrc
 }
 
 install_golang() {

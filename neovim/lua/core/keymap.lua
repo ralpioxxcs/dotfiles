@@ -1,5 +1,5 @@
 -- Change Leader key to a <SPACE BAR>
-vim.g.mapleader = ','
+vim.g.mapleader = ","
 vim.g.maplocalleader = "\\"
 
 -- Common keymap options
@@ -22,67 +22,67 @@ local keymap = vim.api.nvim_set_keymap
 --#######################
 
 -- [Window Navigation]
---  Ctrl + h : move to left
---  Ctrl + j : move to down
---  Ctrl + k : move to up
---  Ctrl + l : move to right
-keymap('n', "<C-h>", "<C-w>h", opts)
-keymap('n', "<C-j>", "<C-w>j", opts)
-keymap('n', "<C-k>", "<C-w>k", opts)
-keymap('n', "<C-l>", "<C-w>l", opts)
+--  Ctrl + w + h : move to left
+--  Ctrl + w + j : move to down
+--  Ctrl + w + k : move to up
+--  Ctrl + w + l : move to right
 
 -- [Window Resizing]
 --  Ctrl + Up   : expand to up
 --  Ctrl + Down : expand to down
 --  Ctrl + Left : expand to left
 --  Ctrl + Right: expand to right
-keymap('n', "<C-Up>", ":resize +2<CR>",             opts)
-keymap('n', "<C-Down>", ":resize -2<CR>",           opts)
-keymap('n', "<C-Left>", ":vertical resize +2<CR>",  opts)
-keymap('n', "<C-Right>", ":vertical resize -2<CR>", opts)
+keymap("n", "<C-k>", ":resize +2<CR>", opts)
+keymap("n", "<C-j>", ":resize -2<CR>", opts)
+keymap("n", "<C-h>", ":vertical resize +2<CR>", opts)
+keymap("n", "<C-l>", ":vertical resize -2<CR>", opts)
 
 -- [Buffer Navigation]
 --  Shift + l : move to right buffer
---  Shift + h : move to left buffer 
-keymap('n', "<S-l>", ":bnext<CR>", opts)
-keymap('n', "<S-h>", ":bprevious<CR>", opts)
+--  Shift + h : move to left buffer
+keymap("n", "<S-l>", ":bnext<CR>", opts)
+keymap("n", "<S-h>", ":bprevious<CR>", opts)
 
 -- Clear search highlighting
 --  <leader> + c
-keymap('n', "<leader>c", ":nohl<CR>", opts)
+keymap("n", "<leader>c", ":nohl<CR>", opts)
 
 --#######################
 -- [Plugin Mapping]
 --#######################
-
 -- Lazygit
-keymap('n', "<learder>l", "<cmd>lua _lazygit_toggle()<CR>", opts)
+keymap("n", "<learder>l", "<cmd>lua _lazygit_toggle()<CR>", opts)
 
 -- Htop
-keymap('n', "<learder>ht", "<cmd>lua _htop_toggle()<CR>", opts)
+keymap("n", "<learder>ht", "<cmd>lua _htop_toggle()<CR>", opts)
 
 -- Refresh Neovim
-keymap('n', '<leader>sv', ':source $MYVIMRC<CR>', opts)
+keymap("n", "<leader>sv", ":source $MYVIMRC<CR>", opts)
 
 -- NvimTree
 --  <leader> + e : Open NvimTree
 --  <leader> + f : Refresh NvimTree
 --  <leader> + n : search NvimTree
-keymap('n', "<leader>e", ":NvimTreeToggle<CR>", opts)
-keymap('n', '<leader>f', ':NvimTreeFocus<CR>', opts)
-keymap('n', '<leader>n', ':NvimTreeFindFile<CR>', opts)
+keymap("n", "<leader>e", ":NvimTreeToggle<CR>", opts)
+keymap("n", "<leader>f", ":NvimTreeFocus<CR>", opts)
+keymap("n", "<leader>n", ":NvimTreeFindFile<CR>", opts)
 
 -- Tagbar
 --  <leader> + z : Open/Close
-keymap('n', "<leader>z", ":TagbarToggle<CR>", opts)
+keymap("n", "<leader>z", ":TagbarToggle<CR>", opts)
 
 -- Telescope
 --  Ctrl + p : File files
 --  Ctrl + f : Find string
-keymap('n', "<C-p>", ":Telescope find_files<CR>", opts)
-keymap('n', "<C-f>", ":Telescope grep_string<CR>", opts)
+keymap("n", "<C-p>", ":Telescope find_files path_display='absolute'<CR>", opts)
+keymap("n", "<C-f>", ":Telescope live_grep<CR>", opts)
+keymap("n", "<C-b>", ":Telescope buffers<CR>", opts)
 
 -- Formatter
 -- <leader> + f : Formatting
-keymap('n', "<leader>f", ":Format<CR>", opts)
-keymap('n', "<leader>F", ":FormatWrite<CR>", opts)
+keymap("n", "<leader>f", ":Format<CR>", opts)
+keymap("n", "<leader>F", ":FormatWrite<CR>", opts)
+
+-- GitSigns
+-- keymap("n", "<leader>gb", ":Gitsigns blame_line<CR>", opts)
+

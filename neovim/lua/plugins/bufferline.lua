@@ -3,12 +3,12 @@ if not status_ok then
   return
 end
 
-bufferline.setup({
+bufferline.setup {
   options = {
 
     -- set to "tabs" to only show tabpages instead
     mode = "buffers",
-    
+
     -- | "ordinal" | "buffer_id" | "both" | function({ ordinal, id, lower, raise }): string
     numbers = "ordinal",
 
@@ -22,7 +22,7 @@ bufferline.setup({
     -- and so changing this is NOT recommended, this is intended
     -- as an escape hatch for people who cannot bear it for whatever reason
     indicator_icon = "▎",
-    buffer_close_icon = "",
+    -- buffer_close_icon = "",
     modified_icon = "●",
     close_icon = "",
     left_trunc_marker = "",
@@ -35,10 +35,11 @@ bufferline.setup({
     diagnostics = "false", -- | "nvim_lsp" | "coc",
     diagnostics_update_in_insert = false,
 
-    offsets = {{ 
-      filetype = "NvimTree", 
-      text = "", padding = 1 
-    }},
+    offsets = { {
+      filetype = "NvimTree",
+      text = "",
+      padding = 1,
+    } },
 
     show_buffer_icons = true,
     show_buffer_close_icons = true,
@@ -59,7 +60,7 @@ bufferline.setup({
     hover = {
       enabled = true,
       dealy = 200,
-      reveal = {'close'}
+      reveal = { "close" },
     },
 
     highlights = {
@@ -137,4 +138,4 @@ bufferline.setup({
       },
     },
   },
-})
+}

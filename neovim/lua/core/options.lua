@@ -1,6 +1,9 @@
 -- Editor settings
 -- vim.opt : set global, window, buffer settings
 
+local cmd = vim.cmd
+local g = vim.g
+
 ----------------------------------------------------------------------------------------------------------------
 -- [Indentation]
 
@@ -23,8 +26,6 @@ vim.opt.smartindent = true
 vim.opt.tabstop = 4
 ----------------------------------------------------------------------------------------------------------------
 
-
-
 ----------------------------------------------------------------------------------------------------------------
 -- [Searching]
 
@@ -41,7 +42,6 @@ vim.opt.incsearch = true
 vim.opt.smartcase = true
 ----------------------------------------------------------------------------------------------------------------
 
-
 ----------------------------------------------------------------------------------------------------------------
 -- [Rendering]
 
@@ -57,7 +57,7 @@ vim.opt.wrap = false
 -- The number of screen lines to keep above and below the cursor
 vim.opt.scrolloff = 10
 
--- The minimal number of screen columns to keep to the left and to the right of the cursor if 'nowrap' is set 
+-- The minimal number of screen columns to keep to the left and to the right of the cursor if 'nowrap' is set
 vim.opt.sidescrolloff = 8
 
 -- 	The value of this option specifies when the line with tab page labels will be displayed:
@@ -104,6 +104,7 @@ vim.opt.splitbelow = true
 
 -- When on, splitting a window will put the new window right of the current one
 vim.opt.splitright = true
+
 ----------------------------------------------------------------------------------------------------------------
 
 ----------------------------------------------------------------------------------------------------------------

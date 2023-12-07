@@ -47,9 +47,9 @@ local kind_icons = {
 cmp.setup {
   view = {
     entries = {
-      name = 'custom', 
-      selection_order = 'near_cursor' 
-    }
+      name = "custom",
+      selection_order = "near_cursor",
+    },
   },
 
   formatting = {
@@ -65,7 +65,7 @@ cmp.setup {
         path = "[Path]",
       })[entry.source.name]
       return vim_item
-    end
+    end,
   },
 
   snippet = {
@@ -77,9 +77,9 @@ cmp.setup {
   mapping = {
     -- up & down
     ["<C-k>"] = cmp.mapping.select_prev_item(),
-	["<C-j>"] = cmp.mapping.select_next_item(),
+    ["<C-j>"] = cmp.mapping.select_next_item(),
 
-    -- scroll 
+    -- scroll
     ["<C-b>"] = cmp.mapping(cmp.mapping.scroll_docs(-1), { "i", "c" }),
     ["<C-f>"] = cmp.mapping(cmp.mapping.scroll_docs(1), { "i", "c" }),
 
@@ -121,5 +121,5 @@ cmp.setup {
   confirm_opts = {
     behavior = cmp.ConfirmBehavior.Replace,
     select = false,
-  }
+  },
 }
