@@ -86,3 +86,6 @@ keymap("n", "<leader>F", ":FormatWrite<CR>", opts)
 -- GitSigns
 -- keymap("n", "<leader>gb", ":Gitsigns blame_line<CR>", opts)
 
+-- Vim-doge
+keymap("n", "<leader>d", ":DogeGenerate<CR>", opts)
+

@@ -148,4 +148,11 @@ require("lazy").setup {
   -- Image
   { "edluffy/hologram.nvim" },
   { "samodostal/image.nvim", dependencies = { "m00qek/baleia.nvim" } },
+
+  -- jsdoc
+  { "kkoomen/vim-doge",
+    build = function()
+      vim.fn["doge#install"]()
+    end,
+  }
 }
