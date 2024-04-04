@@ -4,64 +4,81 @@ export EDITOR="nvim"
 
 alias zshrc='${=EDITOR} ${ZDOTDIR:-$HOME}/.zshrc'
 
-#alias cat="bat --paging=never --theme=TwoDark"
-
+#
+# Docker
+# 
 alias d="docker"
-alias dc="docker-compose"
+alias dc="docker compose"
 
-alias vi="nvim"
+#
+# Vim
+#
+alias vi="vim"
 alias vim="nvim"
 
-# easy navigation
+#
+# Easy navigation
+# 
 alias ..="cd .."
 alias ...="cd ../.."
 alias ...="cd ../../.."
 alias ....="cd ../../../.."
 alias ~="cd ~"
 
-# shorcut
+#
+# Shortcuts
+#
 alias dl="cd ~/Downloads"
 alias dt="cd ~/Desktop"
 alias p="cd ~/projects"
-alias gop="cd $GOPATH"
+
+#
+# Git
+#
 alias g="git"
 
-# List all files colorized in long format
+#
+# List files
+#
+alias ls="exa"
+alias ll="exa -alh"
+alias tree="exa --tree"
+
+# list all files colorized in long format
 alias l="ls -lF ${colorflag}"
-
-# List all files colorized in long format, excluding . and ..
+# list all files colorized in long format, excluding . and ..
 alias la="ls -lAF ${colorflag}"
-
-# List only directories
+# list only directories
 alias lsd="ls -lF ${colorflag} | grep --color=never '^d'"
 
-# Always use color output for `ls`
-alias ls="command ls ${colorflag}"
-
+#
+# Grep
+#
 # Always enable colored `grep` output
-# Note: `GREP_OPTIONS="--color=auto"` is deprecated, hence the alias usage.
 alias grep='grep --color=auto'
 alias fgrep='fgrep --color=auto'
 alias egrep='egrep --color=auto'
 
-# Get week number
-alias week='date +%V'
-
-# IP addresses
-alias ip="dig +short myip.opendns.com @resolver1.opendns.com"
-alias localip="ipconfig getifaddr en0"
+#
+# Networks
+#
+alias myip="dig +short myip.opendns.com @resolver1.opendns.com"
 alias ips="ifconfig -a | grep -o 'inet6\? \(addr:\)\?\s\?\(\(\([0-9]\+\.\)\{3\}[0-9]\+\)\|[a-fA-F0-9:]\+\)' | awk '{ sub(/inet6? (addr:)? ?/, \"\"); print }'"
 
-# Show active network interfaces
-alias ifactive="ifconfig | pcregrep -M -o '^[^\t:]+:([^\n]|\n\t)*status: active'"
+#
+# Translation
+# 
+alias trs_k2e="trans -b :en"
+alias trs_e2k="trans -b :ko"
 
-# Trim new lines and copy to clipboard
-alias c="tr -d '\n' | pbcopy"
+#
+# ETC
+#
 
-# Reload the shell (i.e. invoke as a login shell)
+# reload the shell (i.e. invoke as a login shell)
 alias reload="exec ${SHELL} -l"
 
-# Print each PATH entry on a separate line
+# print each PATH entry on a separate line
 alias path='echo -e ${PATH//:/\\n}'
 
-alias lc='colorls -lA --sd'
+alias lg='lazygit'

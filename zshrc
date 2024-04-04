@@ -6,12 +6,19 @@ export GOROOT=/usr/local/go
 export PATH=${PATH}:${GOROOT}/bin:${ZSH_CUSTOM}/plugins/git-fuzzy/bin:${HOME}/.local/bin
 export PATH=${PATH}:$(go env GOPATH)/bin
 export PATH=${PATH}:/usr/local/cuda/bin
+export PATH=${PATH}:${HOME}/.local/share/gem/ruby/3.0.0/bin
 
 # Locale
 export LANG=en_US.UTF-8
 export LC_ALL=en_US.UTF-8
 
 test -r ~/.dir_colors && eval $(dircolors ~/.dir_colors)
+
+if command -v bat > /dev/null; then
+  alias cat="bat -p"
+elif command -v batcat > /dev/null; then
+  alias cat="batcat -p"
+fi
 
 # ZSH plugins variables
 ZSH_TMUX_AUTOSTART=false
@@ -44,7 +51,7 @@ plugins=(
   docker
   docker-compose
 
-  dotenv
+  #dotenv
   cp
 
   #chucknorris
@@ -290,3 +297,28 @@ xlist() {
   if [ -z "$1" ]; then num=10; else num=$1; fi
   xauth list | awk "/unix:${num}/"
 }
+
+export NVM_DIR="$HOME/.nvm"
+[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
+[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
+
+source $(dirname $(gem which colorls))/tab_complete.sh
+
+decode_base64_url() {
+  local len=$((${#1} % 4))
+  local result="$1"
+  if [ $len -eq 2 ]; then result="$1"'=='
+  elif [ $len -eq 3 ]; then result="$1"'=' 
+  fi
+  echo "$result" | tr '_-' '/+' | openssl enc -d -base64
+}
+
+decode_jwt(){
+   decode_base64_url $(echo -n $2 | cut -d "." -f $1) | jq .
+}
+
+# Decode JWT header
+alias jwth="decode_jwt 1"
+
+# Decode JWT Payload
+alias jwtp="decode_jwt 2"
