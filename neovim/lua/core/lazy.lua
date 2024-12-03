@@ -154,5 +154,8 @@ require("lazy").setup {
     build = function()
       vim.fn["doge#install"]()
     end,
-  }
+  },
+
+  -- QMK layout Formats
+  { "codethread/qmk.nvim" }
 }

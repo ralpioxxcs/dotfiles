@@ -1,3 +1,4 @@
+
 -- Import Lua modules
 require "core/lazy"
 require "core/options"
@@ -21,6 +22,7 @@ require "plugins/toggleterm"
 require "plugins/which-key"
 require "plugins/telescope"
 require "plugins/gitsigns"
+require "plugins/qmk-format"
 
 --------------------------------------------------
 
@@ -147,5 +149,6 @@ require("formatter").setup {
     },
   },
 }
+
 
 

@@ -35,8 +35,11 @@ spin='-\|/'
 
 ################################################################
 
-## Entrypoint
+################
+## Entrypoint ##
+################
 main() {
+  # Check super-user
   sudo -S true </dev/null 2>/dev/null
   if [ $? != 0 ]; then
     read -s -p "Enter password for sudo: " sudoPW
@@ -80,21 +83,21 @@ main() {
 ##########################################
 
 check_preinstalled_packages() {
-  local prerequsite_pacakges=(
-    "curl",
-    "zsh",
-    "lua5.3",
-    "python-pip",
-    "python3-pip",
-    "build-essential",
-    "htop",
-    "vim",
+  prerequsite_packges=(
+    "wget"
+    "curl"
+    "lua5.3"
+    "build-essential"
+    "htop"
+    "vim"
     "ripgrep"
+    "exa"
+    "net-tools"
+    "jq"
   )
-  echo " "
-  echo "check & install prerequisite packages.."
-  apt_install_wrapper curl wget lua5.2 >/dev/null 2>&1 &
-  spinner
+  echo "check & install pre-requisite packages.."
+
+  apt_install_wrapper "${prerequsite_packges[@]}" >/dev/null 2>&1 &
 }
 
 check_package_installed() {
@@ -132,6 +135,7 @@ apt_install_wrapper() {
     packages+=" ${var}"
   done
   echo ${packages}
+  sleep 1
 
   echo $sudoPW | sudo -S apt install -y ${packages}
 }
