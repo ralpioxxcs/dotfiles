@@ -52,7 +52,7 @@ main() {
   while true; do
     clear
     echo "# Select categories"
-    echo "[1] terminal"
+    echo "[1] terminal utils"
     echo "[2] editors"
     echo "[3] languages"
     echo "[4] tools"
@@ -218,9 +218,9 @@ editors() {
 languages() {
   while true; do
     clear
-    echo "[1] golang"
-    echo "[2] rust"
-    echo "[3] node"
+    echo "[1] Golang"
+    echo "[2] Rust"
+    echo "[3] Node"
     echo -e "[4] ${COLOR_DARK_GRAY}back${COLOR_NONE}"
     read ans
 
@@ -230,7 +230,9 @@ languages() {
       install_rust
       echo "skip"
     elif [ "$ans" != "${ans#[3]}" ]; then
-      install_node 18
+      local nodeVersion=""
+      read -s -p "Please enter the version" nodeVersion
+      install_node ${nodeVersion}
     elif [ "$ans" != "${ans#[4]}" ]; then
       break
     else
@@ -400,12 +402,10 @@ install_zsh() {
     read -p "Do you want to install Nerd-Fonts? [Y/n]" yn
     case $yn in
     [Yy]*)
-      echo "installing Nerd Font (Hack, FiraCode) ..."
+      echo "installing Nerd Font ..."
       custom_install_wrapper \
         'git clone --depth=1 https://github.com/ryanoasis/nerd-fonts.git' \
-        'nerd-fonts/install.sh FiraCode' \
-        'nerd-fonts/install.sh SpaceMono' \
-        'nerd-fonts/install.sh Hack' \
+        'nerd-fonts/install.sh FiraCode Hack SpaceMono RobotoMono' \
         >/dev/null 2>&1 &
       spinner
 
@@ -501,8 +501,8 @@ install_alacritty() {
     fi
 
     custom_install_wrapper \
-      'git clone https://github.com/alacritty/alacritty /tmp/alacirtty'
-    'cargo install alacritty' \
+      'git clone https://github.com/alacritty/alacritty /tmp/alacirtty' \
+      'cargo install alacritty' \
       'sudo tic -xe alacritty,alacritty-direct /tmp/alacritty/extra/alacritty.info' \
       'sudo cp /tmp/alacritty/extra/logo/alacritty-term.svg /usr/share/pixmaps/Alacritty.svg' \
       'sudo desktop-file-install /tmp/alacritty/extra/linux/Alacritty.desktop' \
@@ -599,7 +599,7 @@ install_node() {
 
 install_rust() {
   curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y --profile default
-  
+
   echo "export PATH=${HOME}/.cargo/bin:${PATH}" >>${HOME}/.zshrc
 
   source ${HOME}/.zshrc
