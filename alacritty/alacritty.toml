@@ -1,34 +1,88 @@
-import = [ "~/.config/alacritty/themes/nord.toml" ]
+[general]
+live_config_reload = true
+import = [
+  "~/.config/alacritty/themes/themes/catppuccin_frappe.toml"
+]
 
-window.opacity = 0.95
-window.padding.x = 10
-window.padding.y = 10
-window.decorations = "full"
-window.startup_mode = "Windowed"
-window.title = "JJ"
-window.dynamic_title = true
-window.decorations_theme_variant = 'Dark'
+[[keyboard.bindings]]
+action = "ToggleFullscreen"
+key = "F11"
 
-[font] 
-normal = { family = "Hack Nerd Font", style = "Retina" }
-bold = { family = "Hack Nerd Font", style = "Bold" }
+[[keyboard.bindings]]
+action = "CreateNewWindow"
+key = "N"
+mods = "Control | Shift"
 
-[cursor]
-  style.shape = "Underline"
-  style.blinking = "On"
-  thickness = 1.0
+[env]
+TERM = "xterm-256color"
+
+[font]
+size = 11.0
+
+[font.bold]
+family = "FantasqueSansM NerdFont"
+style = "Bold"
+
+[font.italic]
+family = "FantasqueSansM NerdFont"
+style = "Italic"
+
+[font.normal]
+family = "FantasqueSansM NerdFont"
+style = "Regular"
+
+[[hints.enabled]]
+action = "Copy"
+regex = "[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}"
+
+[hints.enabled.mouse]
+enabled = true
+
+[[hints.enabled]]
+action = "Copy"
+regex = 'arn:aws:[a-zA-Z0-9-]+:[a-zA-Z0-9-]*:[0-9]*:[a-zA-Z0-9-_:\\/]+'
+
+[hints.enabled.mouse]
+enabled = true
+
+[[hints.enabled]]
+action = "Copy"
+hyperlinks = true
+post_processing = true
+regex = '(https?://[^\s]+)'
+
+[hints.enabled.binding]
+key = "O"
+mods = "Control | Shift"
+
+[hints.enabled.mouse]
+enabled = true
+
+[[hints.enabled]]
+action = "Copy"
+regex = "sha256:([0-9a-f]{64})"
+
+[hints.enabled.binding]
+key = "S"
+mods = "Control | Shift"
+
+[hints.enabled.mouse]
+enabled = true
+
+[[hints.enabled]]
+action = "Copy"
+post_processing = true
+regex = '(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})'
+
+[hints.enabled.mouse]
+enabled = true
+
+[window]
+dynamic_title = true
+opacity = 0.96
+
+[window.padding]
+x = 3
+y = 3
 
 [keyboard]
-bindings = [
-  # windows
-  { key = "N", mods = "Control | Shift", action = "CreateNewWindow" },
-
-  # full-screen
-  { key = "F11", action = "ToggleFullScreen" },
-
-  # font size
-  { key = "+", mods = "Control", action = "IncreaseFontSize" },
-  { key = "-", mods = "Control", action = "DecreaseFontSize" },
-
-  # vi-mode (Ctrl + Shift + Space)
-]
