@@ -27,41 +27,41 @@ return { -- 1. Copilot 자동완성 플러그인
 			require("copilot_cmp").setup()
 		end,
 	}, -- 3. Copilot Chat 플러그인
-	{
-		"CopilotC-Nvim/CopilotChat.nvim",
-		branch = "main",
-		dependencies = {
-			{ "zbirenbaum/copilot.lua" }, -- 인증 정보를 공유
-			{ "nvim-lua/plenary.nvim" },
-		},
-		opts = {
-			debug = false,
-			-- 채팅창 스타일
-			window = {
-				layout = "vertical",
-				width = 0.5,
-			},
-		},
-		-- Copilot Chat을 위한 키맵 설정
-		keys = {
-			{
-				"<leader>cc",
-				"<cmd>CopilotChatToggle<cr>",
-				desc = "Toggle CopilotChat",
-			}, -- Visual 모드에서 선택된 코드로 질문하기
-			{
-				"<leader>cq",
-				function()
-					local input = vim.fn.input("Ask Copilot: ")
-					if input ~= "" then
-						require("CopilotChat").ask(input, {
-							selection = require("CopilotChat.select").get_selection(),
-						})
-					end
-				end,
-				mode = "v",
-				desc = "Ask Copilot question about visual selection",
-			},
-		},
-	},
+	-- {
+	-- 	"CopilotC-Nvim/CopilotChat.nvim",
+	-- 	branch = "main",
+	-- 	dependencies = {
+	-- 		{ "zbirenbaum/copilot.lua" }, -- 인증 정보를 공유
+	-- 		{ "nvim-lua/plenary.nvim" },
+	-- 	},
+	-- 	opts = {
+	-- 		debug = false,
+	-- 		-- 채팅창 스타일
+	-- 		window = {
+	-- 			layout = "vertical",
+	-- 			width = 0.5,
+	-- 		},
+	-- 	},
+	-- 	-- Copilot Chat을 위한 키맵 설정
+	-- 	keys = {
+	-- 		{
+	-- 			"<leader>cc",
+	-- 			"<cmd>CopilotChatToggle<cr>",
+	-- 			desc = "Toggle CopilotChat",
+	-- 		}, -- Visual 모드에서 선택된 코드로 질문하기
+	-- 		{
+	-- 			"<leader>cq",
+	-- 			function()
+	-- 				local input = vim.fn.input("Ask Copilot: ")
+	-- 				if input ~= "" then
+	-- 					require("CopilotChat").ask(input, {
+	-- 						selection = require("CopilotChat.select").get_selection(),
+	-- 					})
+	-- 				end
+	-- 			end,
+	-- 			mode = "v",
+	-- 			desc = "Ask Copilot question about visual selection",
+	-- 		},
+	-- 	},
+	-- },
 }
