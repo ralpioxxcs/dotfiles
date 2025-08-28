@@ -1,141 +1,93 @@
-local status_ok, bufferline = pcall(require, "bufferline")
-if not status_ok then
-  return
-end
+return {
+    'akinsho/bufferline.nvim',
+    version = "*", -- 최신 버전을 사용하도록 설정
+    dependencies = {'nvim-tree/nvim-web-devicons'}, -- 파일 아이콘 표시를 위한 의존성
 
-bufferline.setup {
-  options = {
-
-    -- set to "tabs" to only show tabpages instead
-    mode = "buffers",
-
-    -- | "ordinal" | "buffer_id" | "both" | function({ ordinal, id, lower, raise }): string
-    numbers = "ordinal",
-
-    -- can be a string | function, see "Mouse actions"
-    close_command = "bdelete! %d",
-    right_mouse_command = "bdelete! %d",
-    left_mouse_command = "buffer %d",
-    middle_mouse_command = nil,
-
-    -- NOTE: this plugin is designed with this icon in mind,
-    -- and so changing this is NOT recommended, this is intended
-    -- as an escape hatch for people who cannot bear it for whatever reason
-    indicator_icon = "▎",
-    -- buffer_close_icon = "",
-    modified_icon = "●",
-    close_icon = "",
-    left_trunc_marker = "",
-    right_trunc_marker = "",
-
-    max_name_length = 30,
-    max_prefix_length = 30, -- prefix used when a buffer is de-duplicated
-
-    tab_size = 21,
-    diagnostics = "false", -- | "nvim_lsp" | "coc",
-    diagnostics_update_in_insert = false,
-
-    offsets = { {
-      filetype = "NvimTree",
-      text = "",
-      padding = 1,
-    } },
-
-    show_buffer_icons = true,
-    show_buffer_close_icons = true,
-    show_close_icon = true,
-    show_tab_indicators = true,
-
-    -- whether or not custom sorted buffers should persist
-    persist_buffer_sort = true,
-
-    -- can also be a table containing 2 custom separators
-    -- [focused and unfocused]. eg: { '|', '|' }
-    separator_style = "thick", -- | "thick" | "thin" | { 'any', 'any' },
-    style_preset = bufferline.style_preset.no_italic,
-
-    enforce_regular_tabs = true,
-    always_show_bufferline = true,
-
-    hover = {
-      enabled = true,
-      dealy = 200,
-      reveal = { "close" },
+    opts = {
+        options = {
+            -- 버퍼 번호 표시 방식: "none" | "ordinal" | "buffer_id" | "both"
+            numbers = "ordinal",
+            -- 버퍼 닫기 버튼 표시
+            close_icon = '', -- 닫기 아이콘 (x)
+            -- 수정되지 않은 버퍼 닫기 버튼 표시
+            buffer_close_icon = '',
+            modified_icon = '●', -- 수정된 파일 아이콘
+            -- 왼쪽과 오른쪽 끝의 패딩
+            show_buffer_close_icons = true,
+            show_close_icon = true,
+            -- 탭 구분자 스타일 설정
+            separator_style = "slant", -- "slant", "padded_slant", "thick", "thin", "padded_thin"
+            -- LSP 진단(에러, 경고) 표시 활성화
+            diagnostics = "nvim_lsp",
+            diagnostics_indicator = function(count, level, diagnostics_dict, context)
+                local icon = level == vim.diagnostic.severity.ERROR and " " or
+                                 (level == vim.diagnostic.severity.WARN and " " or " ")
+                return icon .. count
+            end,
+            -- NvimTree와 같은 파일 탐색기 사용 시 여백 추가
+            offsets = {{
+                filetype = "NvimTree",
+                text = "File Explorer",
+                text_align = "left",
+                separator = true
+            }},
+            -- 버퍼가 하나만 있어도 항상 버퍼라인 표시
+            always_show_bufferline = true
+        }
     },
-
-    highlights = {
-      fill = {
-        fg = { attribute = "fg", highlight = "#ff0000" },
-        bg = { attribute = "bg", highlight = "TabLine" },
-      },
-      background = {
-        fg = { attribute = "fg", highlight = "TabLine" },
-        bg = { attribute = "bg", highlight = "TabLine" },
-      },
-      buffer_visible = {
-        fg = { attribute = "fg", highlight = "TabLine" },
-        bg = { attribute = "bg", highlight = "TabLine" },
-      },
-      close_button = {
-        fg = { attribute = "fg", highlight = "TabLine" },
-        bg = { attribute = "bg", highlight = "TabLine" },
-      },
-      close_button_visible = {
-        fg = { attribute = "fg", highlight = "TabLine" },
-        bg = { attribute = "bg", highlight = "TabLine" },
-      },
-      tab_selected = {
-        fg = { attribute = "fg", highlight = "Normal" },
-        bg = { attribute = "bg", highlight = "Normal" },
-      },
-      tab = {
-        fg = { attribute = "fg", highlight = "TabLine" },
-        bg = { attribute = "bg", highlight = "TabLine" },
-      },
-      tab_close = {
-        -- fg = {attribute='fg',highlight='LspDiagnosticsDefaultError'},
-        fg = { attribute = "fg", highlight = "TabLineSel" },
-        bg = { attribute = "bg", highlight = "Normal" },
-      },
-      duplicate_selected = {
-        fg = { attribute = "fg", highlight = "TabLineSel" },
-        bg = { attribute = "bg", highlight = "TabLineSel" },
-        italic = true,
-      },
-      duplicate_visible = {
-        fg = { attribute = "fg", highlight = "TabLine" },
-        bg = { attribute = "bg", highlight = "TabLine" },
-        italic = true,
-      },
-      duplicate = {
-        fg = { attribute = "fg", highlight = "TabLine" },
-        bg = { attribute = "bg", highlight = "TabLine" },
-        italic = true,
-      },
-      modified = {
-        fg = { attribute = "fg", highlight = "TabLine" },
-        bg = { attribute = "bg", highlight = "TabLine" },
-      },
-      modified_selected = {
-        fg = { attribute = "fg", highlight = "Normal" },
-        bg = { attribute = "bg", highlight = "Normal" },
-      },
-      modified_visible = {
-        fg = { attribute = "fg", highlight = "TabLine" },
-        bg = { attribute = "bg", highlight = "TabLine" },
-      },
-      separator = {
-        fg = { attribute = "bg", highlight = "TabLine" },
-        bg = { attribute = "bg", highlight = "TabLine" },
-      },
-      separator_selected = {
-        fg = { attribute = "bg", highlight = "Normal" },
-        bg = { attribute = "bg", highlight = "Normal" },
-      },
-      indicator_selected = {
-        fg = { attribute = "fg", highlight = "LspDiagnosticsDefaultHint" },
-        bg = { attribute = "bg", highlight = "Normal" },
-      },
-    },
-  },
+    -- 키맵 설정
+    keys = {{
+        "<Tab>",
+        "<cmd>BufferLineCycleNext<cr>",
+        desc = "Next buffer"
+    }, {
+        "<S-Tab>",
+        "<cmd>BufferLineCyclePrev<cr>",
+        desc = "Prev buffer"
+    }, {
+        "<leader>c",
+        "<cmd>bdelete<cr>",
+        desc = "Close current buffer"
+    }, -- 특정 버퍼로 바로 이동 (1~9)
+    {
+        "<leader>1",
+        "<cmd>BufferLineGoToBuffer 1<cr>",
+        desc = "Go to buffer 1"
+    }, {
+        "<leader>2",
+        "<cmd>BufferLineGoToBuffer 2<cr>",
+        desc = "Go to buffer 2"
+    }, {
+        "<leader>3",
+        "<cmd>BufferLineGoToBuffer 3<cr>",
+        desc = "Go to buffer 3"
+    }, {
+        "<leader>4",
+        "<cmd>BufferLineGoToBuffer 4<cr>",
+        desc = "Go to buffer 4"
+    }, {
+        "<leader>5",
+        "<cmd>BufferLineGoToBuffer 5<cr>",
+        desc = "Go to buffer 5"
+    }, {
+        "<leader>6",
+        "<cmd>BufferLineGoToBuffer 6<cr>",
+        desc = "Go to buffer 6"
+    }, {
+        "<leader>7",
+        "<cmd>BufferLineGoToBuffer 7<cr>",
+        desc = "Go to buffer 7"
+    }, {
+        "<leader>8",
+        "<cmd>BufferLineGoToBuffer 8<cr>",
+        desc = "Go to buffer 8"
+    }, {
+        "<leader>9",
+        "<cmd>BufferLineGoToBuffer 9<cr>",
+        desc = "Go to buffer 9"
+    }, {
+        "<leader>$",
+        "<cmd>BufferLineGoToBuffer -1<cr>",
+        desc = "Go to last buffer"
+    }}
 }

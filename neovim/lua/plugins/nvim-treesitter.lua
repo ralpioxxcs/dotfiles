@@ -1,45 +1,43 @@
-local status_ok, treesitter = pcall(require, "nvim-treesitter.configs")
-if not status_ok then
-  return
-end
+return {
+    "nvim-treesitter/nvim-treesitter",
+    build = ":TSUpdate",
+    opts = {
+        -- A list of parser names
+        ensure_installed = {"c", "cpp", "make", "cmake", "cuda", "go", "gomod", "gosum", "bash", "python", "lua", "vim",
+                            "tmux", "javascript", "typescript", "html", "css", "sql", "graphql", "xml", "json", "yaml",
+                            "markdown"},
 
-treesitter.setup {
-  ensure_installed = {
-    "c",
-    "cpp",
-    "make",
-    "cmake",
-    "cuda",
+        -- Install parsers synchronously
+        sync_install = true,
 
-    "go",
-    "gomod",
+        -- Automatically install missing parsers when entering buffer
+        auto_install = true,
 
-    "bash",
-    "python",
-    "lua",
-    "vim",
+        -- List of parsers to ignore installing
+        ignore_install = {},
 
-    "javascript",
-    "typescript",
-    "html",
-    "css",
+        highlight = {
+            enable = true,
+            additional_vim_regex_highlighting = false
+        },
 
-    "json",
-    "yaml",
-    "markdown",
-  },
-  sync_install = true,
-  auto_install = true,
+        autopairs = {
+            enable = true
+        },
 
-  autopairs = {
-    enable = true,
-  },
+        indent = {
+            enable = true
+        },
 
-  highlight = {
-    enable = true,
-  },
+        incremental_selection = {
+            enable = true,
+            keymaps = {
+                init_selection = "gnn", -- set to `false` to disable one of the mappings
+                node_incremental = "grn",
+                scope_incremental = "grc",
+                node_decremental = "grm"
+            }
+        }
+    }
 
-  indent = {
-    enable = true,
-  },
 }

@@ -10,9 +10,6 @@ local opts = { noremap = true, silent = true }
 -- Shorten function name (global mappings)
 local keymap = vim.api.nvim_set_keymap
 
-
-keymap("n", "==", ":wincmd =<CR>", opts)
-
 -- [Modes]
 --  n : normal
 --  v : visual and select
@@ -48,15 +45,16 @@ keymap("n", "<S-h>", ":bprevious<CR>", opts)
 
 -- Clear search highlighting
 --  <leader> + c
--- keymap("n", "<leader>c", ":nohl<CR>", opts)
+keymap("n", "<leader>c", ":nohl<CR>", opts)
+
 --#######################
 -- [Plugin Mapping]
 --#######################
 -- Lazygit
--- keymap("n", "<learder>l", "<cmd>lua _lazygit_toggle()<CR>", opts)
+keymap("n", "<learder>l", "<cmd>lua _lazygit_toggle()<CR>", opts)
 
 -- Htop
--- keymap("n", "<learder>htop", "<cmd>lua _htop_toggle()<CR>", opts)
+keymap("n", "<learder>ht", "<cmd>lua _htop_toggle()<CR>", opts)
 
 -- Refresh Neovim
 keymap("n", "<leader>sv", ":source $MYVIMRC<CR>", opts)
@@ -67,7 +65,7 @@ keymap("n", "<leader>sv", ":source $MYVIMRC<CR>", opts)
 --  <leader> + n : search NvimTree
 keymap("n", "<leader>e", ":NvimTreeToggle<CR>", opts)
 keymap("n", "<leader>f", ":NvimTreeFocus<CR>", opts)
--- keymap("n", "<leader>n", ":NvimTreeFindFile<CR>", opts)
+keymap("n", "<leader>n", ":NvimTreeFindFile<CR>", opts)
 
 -- Tagbar
 --  <leader> + z : Open/Close
@@ -76,9 +74,9 @@ keymap("n", "<leader>z", ":TagbarToggle<CR>", opts)
 -- Telescope
 --  Ctrl + p : File files
 --  Ctrl + f : Find string
---keymap("n", "<C-p>", ":Telescope find_files<CR>", opts)
---keymap("n", "<C-f>", ":Telescope live_grep<CR>", opts)
---keymap("n", "<C-b>", ":Telescope buffers<CR>", opts)
+keymap("n", "<C-p>", ":Telescope find_files path_display='absolute'<CR>", opts)
+keymap("n", "<C-f>", ":Telescope live_grep<CR>", opts)
+keymap("n", "<C-b>", ":Telescope buffers<CR>", opts)
 
 -- Formatter
 -- <leader> + f : Formatting
@@ -86,14 +84,8 @@ keymap("n", "<leader>f", ":Format<CR>", opts)
 keymap("n", "<leader>F", ":FormatWrite<CR>", opts)
 
 -- GitSigns
-keymap("n", "<leader>gb", ":Gitsigns blame_line<CR>", opts)
-
-keymap("n", "<leader>hs", ":Gitsigns stage_hunk<CR>", opts)
-keymap("n", "<leader>hr", ":Gitsigns reset_hunk<CR>", opts)
-keymap("n", "<leader>hp", ":Gitsigns preview_hunk<CR>", opts)
-keymap("n", "<leader>tb", ":Gitsigns toggle_current_line_blaim<CR>", opts)
-keymap("n", "<leader>td", ":Gitsigns toggle_deleted<CR>", opts)
-keymap("n", "<leader>hd", ":Gitsigns diffthis<CR>", opts)
+-- keymap("n", "<leader>gb", ":Gitsigns blame_line<CR>", opts)
 
 -- Vim-doge
 keymap("n", "<leader>d", ":DogeGenerate<CR>", opts)
+

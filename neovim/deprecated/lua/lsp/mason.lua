@@ -9,13 +9,13 @@ local servers = {
   "gopls",
 
   -- python
-  -- "pyright",
+  "pyright",
 
   -- html/css/js
   "html",
   "cssls",
   "tailwindcss",
-  "ts_ls",
+  "tsserver",
 
   -- scripts
   "lua_ls",
@@ -36,7 +36,7 @@ local servers = {
 -- Mason setup
 require("mason").setup {
   ui = {
-    border = nil,
+    border = "none",
     icons = {
       package_installed = "✓",
       package_pending = "➜",
@@ -49,16 +49,19 @@ require("mason").setup {
 }
 
 -- Mason lspconfig setup
---require("mason-lspconfig").setup {
+require("mason-lspconfig").setup {
   -- 자동으로 설치될 language 서버 목록
-  --ensure_installed = servers,
+  ensure_installed = servers,
 
   -- 모든 서버들은 lspconfig를 통해 자동으로 설치됨
-  -- automatic_installation = true,
---}
+  automatic_installation = true,
+}
 
--- nvim-lspconfig setup
-local lspconfig = require('lspconfig')
+-- lspconfig setup
+local lspconfig_status_ok, lspconfig = pcall(require, "lspconfig")
+if not lspconfig_status_ok then
+  return
+end
 
 local opts = {}
 
@@ -78,12 +81,3 @@ for _, server in pairs(servers) do
 
   lspconfig[server].setup(opts)
 end
-
-require('mason-lspconfig').setup_handlers {
-  function (server_name)
-    lspconfig[server_name].setup {
-      on_attach = on_attach,
-      capabilities = capabilities, -- 👈 여기서 cmp의 capabilities를 전달합니다.
-    }
-  end,
-}
