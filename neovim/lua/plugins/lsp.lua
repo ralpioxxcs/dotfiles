@@ -60,11 +60,13 @@ return {
 			local cmp = require("cmp")
 			local luasnip = require("luasnip")
 			cmp.setup({
+
 				snippet = {
 					expand = function(args)
 						luasnip.lsp_expand(args.body)
 					end,
 				},
+
 				formatting = {
 					format = require("lspkind").cmp_format({
 						mode = "symbol_text",
@@ -76,24 +78,34 @@ return {
 						},
 					}),
 				},
+
 				window = {
 					completion = cmp.config.window.bordered(),
 					documentation = cmp.config.window.bordered(),
 				},
+
 				view = {
 					entries = {
 						name = "custom",
 						selection_order = "near_cursor",
 					},
 				},
+
 				mapping = cmp.mapping.preset.insert({
-					["<C-b>"] = cmp.mapping.scroll_docs(-4),
-					["<C-f>"] = cmp.mapping.scroll_docs(4),
+					-- 위/아래 이동
+					["<C-k>"] = cmp.mapping.select_prev_item(),
+					["<C-j>"] = cmp.mapping.select_next_item(),
+
+					-- 도움말 창 스크롤
+					["<C-h>"] = cmp.mapping.scroll_docs(-4),
+					["<C-l>"] = cmp.mapping.scroll_docs(4),
+
+					-- 기존의 유용한 키맵들
 					["<C-Space>"] = cmp.mapping.complete(),
-					["<CR>"] = cmp.mapping.confirm({
-						behavior = cmp.ConfirmBehavior.Replace,
-						select = true,
-					}),
+					["<C-e>"] = cmp.mapping.abort(),
+					["<CR>"] = cmp.mapping.confirm({ select = true }), -- 엔터로 선택
+
+					-- 다음 항목 선택 및 스니펫 이동용으로 사용
 					["<Tab>"] = cmp.mapping(function(fallback)
 						if cmp.visible() then
 							cmp.select_next_item()
@@ -113,6 +125,7 @@ return {
 						end
 					end, { "i", "s" }),
 				}),
+
 				sources = cmp.config.sources({
 					{
 						name = "nvim_lsp",
@@ -128,11 +141,9 @@ return {
 					},
 					{
 						name = "path",
-						group_index = 2,
 					},
 					{
 						name = "copilot",
-						group_index = 2,
 					},
 					{
 						name = "treesitter",
@@ -140,5 +151,10 @@ return {
 				}),
 			})
 		end,
+	},
+	{
+		"pmizio/typescript-tools.nvim",
+		dependencies = { "nvim-lua/plenary.nvim", "neovim/nvim-lspconfig" },
+		opts = {},
 	},
 }

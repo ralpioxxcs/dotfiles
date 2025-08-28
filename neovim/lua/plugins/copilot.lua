@@ -29,7 +29,7 @@ return { -- 1. Copilot 자동완성 플러그인
 	}, -- 3. Copilot Chat 플러그인
 	{
 		"CopilotC-Nvim/CopilotChat.nvim",
-		branch = "canary", -- 최신 기능을 위해 canary 브랜치 사용
+		branch = "main",
 		dependencies = {
 			{ "zbirenbaum/copilot.lua" }, -- 인증 정보를 공유
 			{ "nvim-lua/plenary.nvim" },
