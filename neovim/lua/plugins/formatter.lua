@@ -35,17 +35,20 @@ return {
         ---- Code Spell Checker
         formatting.codespell,
 
+        ---- Shell
+        formatting.shellharden,
+
+        ---- SQL
+        formatting.sqlformat,
+        --formatting.sql_formatter,
+
         -- Linter
         diagnostics.codespell,
         diagnostics.commitlint,
         diagnostics.dotenv_linter,
-        diagnostics.shellcheck.with({
-          diagnostics_format = "[#{c}] #{m} (#{s})",
-        }),
 
         -- Code Actions
         code_actions.gitsigns,
-        code_actions.shellcheck,
       },
 
       on_attach = function(client, bufnr)
