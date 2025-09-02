@@ -48,4 +48,6 @@ else
 	vim.cmd.colorscheme("catppuccin")
 
 	vim.g.markdown_fenced_languages = { "ts=typescript" }
+
+    vim.api.nvim_set_hl(0, "CmpItemKindCopilot", {fg ="#6CC644"})
 end
