@@ -4,6 +4,10 @@
 # macOS Dotfiles Installer (gum TUI)
 ################################################################
 
+# brew: 설치마다 auto-update 안 돌게 + 환경 힌트 소음 제거 (속도↑)
+export HOMEBREW_NO_AUTO_UPDATE=1
+export HOMEBREW_NO_ENV_HINTS=1
+
 # gum 테마 색상 (Nord 계열)
 CLR_PRIMARY=110   # blue
 CLR_OK=108        # green
@@ -158,29 +162,32 @@ pip_install_wrapper() {
 # Installation Menus
 ################################################################
 
+# 다중 선택 메뉴 헤더 (Tab/Space로 표시, Enter 설치, Esc 뒤로)
+MENU_HINT="Tab/Space to mark · Enter to install · Esc to go back"
+
 terminal() {
   while true; do
     clear
     title "Terminal Utils"
-    local choice
-    choice=$(gum choose --header "Select to install (Esc = back)" \
+    local picks
+    picks=$(gum choose --no-limit --header "$MENU_HINT" \
       "Zsh & Oh My Zsh" \
       "Fish (fisher, starship)" \
       "Tmux" \
       "Lazy tools (lazygit, lazydocker)" \
       "GitHub tools (gh)" \
-      "Alacritty" \
-      "← Back")
-
-    case "$choice" in
-      "Zsh"*)       install_zsh ;;
-      "Fish"*)      install_fish ;;
-      "Tmux")       install_tmux ;;
-      "Lazy"*)      install_lazygit && install_lazydocker ;;
-      "GitHub"*)    install_github_tools ;;
-      "Alacritty")  install_alacritty ;;
-      "← Back"|"")  break ;;
-    esac
+      "Alacritty")
+    [ -z "$picks" ] && break
+    while IFS= read -r pick; do
+      case "$pick" in
+        "Zsh"*)       install_zsh ;;
+        "Fish"*)      install_fish ;;
+        "Tmux")       install_tmux ;;
+        "Lazy"*)      install_lazygit && install_lazydocker ;;
+        "GitHub"*)    install_github_tools ;;
+        "Alacritty")  install_alacritty ;;
+      esac
+    done <<< "$picks"
   done
 }
 
@@ -188,15 +195,16 @@ editors() {
   while true; do
     clear
     title "Editors"
-    local choice
-    choice=$(gum choose --header "Select to install (Esc = back)" \
-      "Neovim" "Visual Studio Code" "← Back")
-
-    case "$choice" in
-      "Neovim")             install_neovim ;;
-      "Visual Studio Code") install_vscode ;;
-      "← Back"|"")          break ;;
-    esac
+    local picks
+    picks=$(gum choose --no-limit --header "$MENU_HINT" \
+      "Neovim" "Visual Studio Code")
+    [ -z "$picks" ] && break
+    while IFS= read -r pick; do
+      case "$pick" in
+        "Neovim")             install_neovim ;;
+        "Visual Studio Code") install_vscode ;;
+      esac
+    done <<< "$picks"
   done
 }
 
@@ -204,20 +212,21 @@ languages() {
   while true; do
     clear
     title "Languages"
-    local choice
-    choice=$(gum choose --header "Select to install (Esc = back)" \
-      "Golang" "Rust" "Node (via nvm)" "← Back")
-
-    case "$choice" in
-      "Golang") install_golang ;;
-      "Rust")   install_rust ;;
-      "Node (via nvm)")
-        local nodeVersion
-        nodeVersion=$(gum input --prompt "Node version: " --placeholder "e.g. --lts, 20")
-        install_node "${nodeVersion}"
-        ;;
-      "← Back"|"") break ;;
-    esac
+    local picks
+    picks=$(gum choose --no-limit --header "$MENU_HINT" \
+      "Golang" "Rust" "Node (via nvm)")
+    [ -z "$picks" ] && break
+    while IFS= read -r pick; do
+      case "$pick" in
+        "Golang") install_golang ;;
+        "Rust")   install_rust ;;
+        "Node (via nvm)")
+          local nodeVersion
+          nodeVersion=$(gum input --prompt "Node version: " --placeholder "e.g. --lts, 20")
+          install_node "${nodeVersion}"
+          ;;
+      esac
+    done <<< "$picks"
   done
 }
 
@@ -225,15 +234,16 @@ tools() {
   while true; do
     clear
     title "Tools"
-    local choice
-    choice=$(gum choose --header "Select to install (Esc = back)" \
-      "Postman" "Obsidian" "← Back")
-
-    case "$choice" in
-      "Postman")   install_postman ;;
-      "Obsidian")  install_obsidian ;;
-      "← Back"|"") break ;;
-    esac
+    local picks
+    picks=$(gum choose --no-limit --header "$MENU_HINT" \
+      "Postman" "Obsidian")
+    [ -z "$picks" ] && break
+    while IFS= read -r pick; do
+      case "$pick" in
+        "Postman")   install_postman ;;
+        "Obsidian")  install_obsidian ;;
+      esac
+    done <<< "$picks"
   done
 }
 
@@ -277,10 +287,8 @@ install_zsh() {
     info "Adding Homebrew Zsh to /etc/shells..."
     echo "$brew_zsh_path" | sudo tee -a /etc/shells >/dev/null
   fi
-  if [[ "$SHELL" != "$brew_zsh_path" ]]; then
-    info "Changing default shell to Homebrew Zsh (password may be required)."
-    chsh -s "$brew_zsh_path"
-    warn "Shell changed. Restart terminal to take effect."
+  if [[ "$SHELL" != "$brew_zsh_path" ]] && gum confirm "Set Homebrew Zsh as your default login shell?"; then
+    chsh -s "$brew_zsh_path" && warn "Shell changed. Restart terminal to take effect."
   fi
 
   # oh-my-zsh
@@ -338,10 +346,8 @@ install_fish() {
     info "Adding fish to /etc/shells..."
     echo "$brew_fish_path" | sudo tee -a /etc/shells >/dev/null
   fi
-  if [[ "$SHELL" != "$brew_fish_path" ]]; then
-    info "Changing default shell to fish (password may be required)."
-    chsh -s "$brew_fish_path"
-    warn "Shell changed. Restart terminal to take effect."
+  if [[ "$SHELL" != "$brew_fish_path" ]] && gum confirm "Set fish as your default login shell?"; then
+    chsh -s "$brew_fish_path" && warn "Shell changed. Restart terminal to take effect."
   fi
 
   # fish 설정 복사 (config, conf.d, completions, plugin 목록)
