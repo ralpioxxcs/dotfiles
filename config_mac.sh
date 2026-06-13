@@ -27,10 +27,20 @@ info() { gum style --foreground "$CLR_PRIMARY" "› $*"; }
 
 pause() { gum input --placeholder "Press Enter to continue..." >/dev/null 2>&1; }
 
-# gum spin 래퍼: 메시지 + 실제 명령 (실 바이너리만 — bash 함수는 보이지 않음)
+# 설치 로그 (spin이 감싼 명령의 출력 보관 — 실패 시 확인용)
+INSTALL_LOG="${TMPDIR:-/tmp}/dotfiles_install.log"
+
+# gum spin 래퍼: 메시지 + 실제 명령 (실 바이너리만 — bash 함수는 보이지 않음).
+# 명령 출력을 gum 파이프가 아닌 로그 파일로 보내야 함. 안 그러면 brew 등이
+# 띄운 자식 프로세스가 파이프를 계속 물고 있어 설치가 끝나도 스피너가 멈추지 않음.
+# stdin도 /dev/null로 막아 숨은 프롬프트로 인한 무한 대기를 방지.
 spin() {
   local msg="$1"; shift
-  gum spin --spinner dot --title "$msg" -- "$@"
+  gum spin --spinner dot --title "$msg" -- \
+    bash -c 'log="$1"; shift; "$@" </dev/null >>"$log" 2>&1' _ "$INSTALL_LOG" "$@"
+  local rc=$?
+  [ $rc -ne 0 ] && err "Failed (exit $rc): $* — see $INSTALL_LOG"
+  return $rc
 }
 
 ################
@@ -115,8 +125,10 @@ brew_install_wrapper() {
   done
 
   if [ ${#packages_to_install[@]} -gt 0 ]; then
-    spin "Installing: ${packages_to_install[*]}" brew install "${packages_to_install[@]}"
-    ok "Installed: ${packages_to_install[*]}"
+    # foreground 실행: brew가 TTY를 가져야 진행률 표시 + sudo 프롬프트 동작.
+    # gum spin으로 감싸면 TTY를 뺏겨 프롬프트에서 무한 대기함.
+    info "Installing: ${packages_to_install[*]}"
+    brew install "${packages_to_install[@]}" && ok "Installed: ${packages_to_install[*]}" || err "Install failed: ${packages_to_install[*]}"
   else
     ok "Already installed: $*"
   fi
@@ -130,8 +142,9 @@ brew_cask_install_wrapper() {
   done
 
   if [ ${#casks_to_install[@]} -gt 0 ]; then
-    spin "Installing (cask): ${casks_to_install[*]}" brew install --cask "${casks_to_install[@]}"
-    ok "Installed: ${casks_to_install[*]}"
+    # foreground: cask는 /Applications 이동에 sudo 비번 프롬프트가 필요할 수 있음
+    info "Installing (cask): ${casks_to_install[*]}"
+    brew install --cask "${casks_to_install[@]}" && ok "Installed: ${casks_to_install[*]}" || err "Install failed: ${casks_to_install[*]}"
   else
     ok "Already installed: $*"
   fi
@@ -340,10 +353,16 @@ install_fish() {
   rsync -azh fish/completions/ "${HOME}/.config/fish/completions/"
 
   # fisher 설치 후 fish_plugins 기반으로 플러그인 복원 (fzf.fish, nvm.fish 등)
-  spin "Installing fisher and plugins" fish -c \
+  # 방금 설치돼 현재 셸 PATH에 없을 수 있으므로 절대경로로 호출
+  spin "Installing fisher and plugins" "$brew_fish_path" -c \
     'curl -sL https://raw.githubusercontent.com/jorgebucaran/fisher/main/functions/fisher.fish | source && fisher install jorgebucaran/fisher >/dev/null 2>&1; fisher update'
 
   ok "Fish setup complete."
+
+  # 현재 터미널을 바로 fish로 교체 (exec이라 설치 스크립트는 여기서 종료됨)
+  if gum confirm "Switch to fish now? (exits this installer)"; then
+    exec "$brew_fish_path"
+  fi
   pause
 }
 
