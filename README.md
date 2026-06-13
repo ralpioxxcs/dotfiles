@@ -3,6 +3,7 @@ repository for setting develop environments.
 
 ## Supported
 * bash
+* fish
 * neovim
 * tmux
 * git

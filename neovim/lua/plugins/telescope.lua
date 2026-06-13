@@ -3,7 +3,6 @@ return {
   dependencies = {
     "nvim-lua/plenary.nvim",
     "nvim-telescope/telescope-ui-select.nvim",
-    "nvim-telescope/telescope-media-files.nvim",
     "nvim-tree/nvim-web-devicons",
   },
 
@@ -32,35 +31,6 @@ return {
 
     telescope.setup({
       defaults = {
-        -- 기존에 사용하시던 이미지 미리보기 설정을 그대로 유지합니다.
-        -- 참고: 이 기능을 사용하려면 시스템에 'catimg'가 설치되어 있어야 합니다.
-        preview = {
-          mime_hook = function(filepath, bufnr, opts)
-            local is_image = function(filepath)
-              local image_extensions = { "png", "jpg", "jpeg", "webp" }
-              local split_path = vim.split(filepath:lower(), ".", {
-                plain = true,
-              })
-              local extension = split_path[#split_path]
-              return vim.tbl_contains(image_extensions, extension)
-            end
-            if is_image(filepath) then
-              local term = vim.api.nvim_open_term(bufnr, {})
-              local function send_output(_, data, _)
-                for _, d in ipairs(data) do
-                  vim.api.nvim_chan_send(term, d .. "\r\n")
-                end
-              end
-              vim.fn.jobstart({ "catimg", filepath }, {
-                on_stdout = send_output,
-                stdout_buffered = true,
-                pty = true,
-              })
-            else
-              require("telescope.previewers.utils").set_preview_message(bufnr, opts.winid, "Binary cannot be previewed")
-            end
-          end,
-        },
         layout_strategy = "vertical",
         layout_config = {
           height = 0.95,
@@ -82,14 +52,9 @@ return {
       },
       extensions = {
         ["ui-select"] = { require("telescope.themes").get_dropdown({}) },
-        media_files = {
-          find_cmd = "rg",
-        },
       },
     })
 
-    -- 확장 기능 로드
     telescope.load_extension("ui-select")
-    telescope.load_extension("media_files")
   end,
 }

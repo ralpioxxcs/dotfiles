@@ -1,16 +1,6 @@
 -- Language servers
 -- (ref : https://github.com/williamboman/mason-lspconfig.nvim#available-lsp-servers)
 local servers = {
-  -- c/c++
-  "clangd",
-  "cmake",
-
-  -- golang
-  "gopls",
-
-  -- python
-  -- "pyright",
-
   -- html/css/js
   "html",
   "cssls",

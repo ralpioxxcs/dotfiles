@@ -1,20 +1,37 @@
 #!/bin/bash
 
-#########################
-# Colors
-COLOR_NONE='\033[0m'
-COLOR_RED='\033[0;31m'
-COLOR_GREEN='\033[0;32m'
-COLOR_CYAN='\033[0;36m'
-COLOR_DARK_GRAY='\033[1;30m'
-COLOR_YELLOW='\033[1;33m'
+################################################################
+# macOS Dotfiles Installer (gum TUI)
+################################################################
 
-#########################
-## Runtime variables
-sudoPW=""
-spin='-\|/'
+# gum 테마 색상 (Nord 계열)
+CLR_PRIMARY=110   # blue
+CLR_OK=108        # green
+CLR_WARN=179      # yellow
+CLR_ERR=167       # red
+CLR_MUTED=243     # gray
 
 ################################################################
+## UI helpers (gum)
+################################################################
+
+title() {
+  gum style --border double --align center --width 50 --margin "1 0" --padding "0 2" \
+    --foreground "$CLR_PRIMARY" --border-foreground "$CLR_PRIMARY" "$@"
+}
+
+ok()   { gum style --foreground "$CLR_OK"    "✓ $*"; }
+warn() { gum style --foreground "$CLR_WARN"  "! $*"; }
+err()  { gum style --foreground "$CLR_ERR"   "✗ $*"; }
+info() { gum style --foreground "$CLR_PRIMARY" "› $*"; }
+
+pause() { gum input --placeholder "Press Enter to continue..." >/dev/null 2>&1; }
+
+# gum spin 래퍼: 메시지 + 실제 명령 (실 바이너리만 — bash 함수는 보이지 않음)
+spin() {
+  local msg="$1"; shift
+  gum spin --spinner dot --title "$msg" -- "$@"
+}
 
 ################
 ## Entrypoint ##
@@ -25,25 +42,17 @@ main() {
 
   while true; do
     clear
-    echo "#################################"
-    echo "#   macOS Dotfiles Installer    #"
-    echo "#################################"
-    echo ""
-    echo "# Select categories to install"
-    echo "[1] Terminal Utils"
-    echo "[2] Editors"
-    echo "[3] Languages"
-    echo "[4] Tools"
-    echo "[5] Exit"
-    read -p "Enter number: " ans
+    title "macOS Dotfiles Installer"
+    local choice
+    choice=$(gum choose --header "Select a category" \
+      "Terminal Utils" "Editors" "Languages" "Tools" "Exit")
 
-    case "$ans" in
-      1) terminal ;;
-      2) editors ;;
-      3) languages ;;
-      4) tools ;;
-      5) exit 0 ;;
-      *) echo "Please enter a valid number." && sleep 2 ;;
+    case "$choice" in
+      "Terminal Utils") terminal ;;
+      "Editors")        editors ;;
+      "Languages")      languages ;;
+      "Tools")          tools ;;
+      "Exit"|"")        exit 0 ;;
     esac
   done
 }
@@ -52,51 +61,39 @@ main() {
 ################ util ####################
 ##########################################
 
-# macOS 필수 구성 요소 (Xcode Command Line Tools, Homebrew) 확인 및 설치
+# macOS 필수 구성 요소 (Xcode CLT, Homebrew, gum) 확인 및 설치
 check_macos_prereqs() {
-  # 1. Xcode Command Line Tools 확인
+  # gum 부트스트랩 전이라 plain echo 사용
+  # 1. Xcode Command Line Tools
   if ! xcode-select -p &>/dev/null; then
-    echo -e "${COLOR_YELLOW}Xcode Command Line Tools not found. Installing...${COLOR_NONE}"
+    echo "Xcode Command Line Tools not found. Installing..."
     xcode-select --install
-    echo -e "${COLOR_GREEN}Please follow the on-screen instructions to complete the installation.${COLOR_NONE}"
-    read -p "Press [Enter] to continue after installation is complete..."
+    echo "Follow the on-screen instructions, then press [Enter]."
+    read -r
   fi
 
-  # 2. Homebrew 확인
+  # 2. Homebrew
   if ! command -v brew &>/dev/null; then
-    echo -e "${COLOR_YELLOW}Homebrew not found. Installing...${COLOR_NONE}"
+    echo "Homebrew not found. Installing..."
     /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
-    
-    # Apple Silicon과 Intel Mac의 경로를 모두 처리
     if [[ -x "/opt/homebrew/bin/brew" ]]; then
-        eval "$(/opt/homebrew/bin/brew shellenv)"
+      eval "$(/opt/homebrew/bin/brew shellenv)"
     elif [[ -x "/usr/local/bin/brew" ]]; then
-        eval "$(/usr/local/bin/brew shellenv)"
+      eval "$(/usr/local/bin/brew shellenv)"
     fi
+    echo "Homebrew installation complete."
+  fi
 
-    echo -e "${COLOR_GREEN}Homebrew installation complete.${COLOR_NONE}"
-  else
-    echo -e "${COLOR_GREEN}Homebrew is already installed. Updating...${COLOR_NONE}"
-    brew update
+  # 3. gum (이후 모든 UI가 의존)
+  if ! command -v gum &>/dev/null; then
+    echo "Installing gum (TUI toolkit)..."
+    brew install gum
   fi
 }
 
 check_prerequisite_packages() {
-  prerequsite_packages=(
-    "wget"
-    "curl"
-    "lua"
-    "htop"
-    "vim"
-    "ripgrep"
-    "exa"
-    "jq"
-  )
-  echo "Checking & installing pre-requisite packages..."
-
-  brew_install_wrapper "${prerequsite_packages[@]}" >/dev/null 2>&1 &
-  spinner
-  echo -e "${COLOR_GREEN}Done.${COLOR_NONE}"
+  local prerequsite_packages=(wget curl lua htop vim ripgrep eza jq)
+  brew_install_wrapper "${prerequsite_packages[@]}"
 }
 
 check_package_installed() {
@@ -104,17 +101,9 @@ check_package_installed() {
   local is_cask=${2:-false}
 
   if [[ "$is_cask" == "true" ]]; then
-    if brew list --cask "$pkgName" &>/dev/null; then
-      retVal="True"
-    else
-      retVal="False"
-    fi
+    brew list --cask "$pkgName" &>/dev/null && retVal="True" || retVal="False"
   else
-    if brew list "$pkgName" &>/dev/null; then
-      retVal="True"
-    else
-      retVal="False"
-    fi
+    brew list "$pkgName" &>/dev/null && retVal="True" || retVal="False"
   fi
 }
 
@@ -122,13 +111,14 @@ brew_install_wrapper() {
   local packages_to_install=()
   for pkg in "$@"; do
     check_package_installed "$pkg"
-    if [[ "$retVal" == "False" ]]; then
-      packages_to_install+=("$pkg")
-    fi
+    [[ "$retVal" == "False" ]] && packages_to_install+=("$pkg")
   done
 
   if [ ${#packages_to_install[@]} -gt 0 ]; then
-    brew install "${packages_to_install[@]}"
+    spin "Installing: ${packages_to_install[*]}" brew install "${packages_to_install[@]}"
+    ok "Installed: ${packages_to_install[*]}"
+  else
+    ok "Already installed: $*"
   fi
 }
 
@@ -136,59 +126,47 @@ brew_cask_install_wrapper() {
   local casks_to_install=()
   for cask in "$@"; do
     check_package_installed "$cask" true
-    if [[ "$retVal" == "False" ]]; then
-      casks_to_install+=("$cask")
-    fi
+    [[ "$retVal" == "False" ]] && casks_to_install+=("$cask")
   done
 
   if [ ${#casks_to_install[@]} -gt 0 ]; then
-    brew install --cask "${casks_to_install[@]}"
+    spin "Installing (cask): ${casks_to_install[*]}" brew install --cask "${casks_to_install[@]}"
+    ok "Installed: ${casks_to_install[*]}"
+  else
+    ok "Already installed: $*"
   fi
 }
 
 pip_install_wrapper() {
-  pip3 install "$@"
-}
-
-custom_install_wrapper() {
-  for cmd in "$@"; do
-    eval "${cmd}"
-  done
-}
-
-spinner() {
-  local pid=$!
-  while kill -0 $pid 2>/dev/null; do
-    printf "."
-    sleep .1
-  done
-  echo
+  spin "pip install: $*" pip3 install "$@"
 }
 
 ################################################################
-#
 # Installation Menus
-#
+################################################################
+
 terminal() {
   while true; do
     clear
-    echo "--- Terminal Utils ---"
-    echo "[1] Zsh & Oh My Zsh"
-    echo "[2] Tmux"
-    echo "[3] Lazy tools (lazygit, lazydocker)"
-    echo "[4] GitHub tools (gh)"
-    echo "[5] Alacritty"
-    echo "[6] ${COLOR_DARK_GRAY}Back to main menu${COLOR_NONE}"
-    read -p "Enter number: " ans
+    title "Terminal Utils"
+    local choice
+    choice=$(gum choose --header "Select to install (Esc = back)" \
+      "Zsh & Oh My Zsh" \
+      "Fish (fisher, starship)" \
+      "Tmux" \
+      "Lazy tools (lazygit, lazydocker)" \
+      "GitHub tools (gh)" \
+      "Alacritty" \
+      "← Back")
 
-    case "$ans" in
-      1) install_zsh ;;
-      2) install_tmux ;;
-      3) install_lazygit && install_lazydocker ;;
-      4) install_github_tools ;;
-      5) install_alacritty ;;
-      6) break ;;
-      *) echo "Please enter a valid number." && sleep 2 ;;
+    case "$choice" in
+      "Zsh"*)       install_zsh ;;
+      "Fish"*)      install_fish ;;
+      "Tmux")       install_tmux ;;
+      "Lazy"*)      install_lazygit && install_lazydocker ;;
+      "GitHub"*)    install_github_tools ;;
+      "Alacritty")  install_alacritty ;;
+      "← Back"|"")  break ;;
     esac
   done
 }
@@ -196,17 +174,15 @@ terminal() {
 editors() {
   while true; do
     clear
-    echo "--- Editors ---"
-    echo "[1] Neovim"
-    echo "[2] Visual Studio Code"
-    echo "[3] ${COLOR_DARK_GRAY}Back to main menu${COLOR_NONE}"
-    read -p "Enter number: " ans
+    title "Editors"
+    local choice
+    choice=$(gum choose --header "Select to install (Esc = back)" \
+      "Neovim" "Visual Studio Code" "← Back")
 
-    case "$ans" in
-      1) install_neovim ;;
-      2) install_vscode ;;
-      3) break ;;
-      *) echo "Please enter a valid number." && sleep 2 ;;
+    case "$choice" in
+      "Neovim")             install_neovim ;;
+      "Visual Studio Code") install_vscode ;;
+      "← Back"|"")          break ;;
     esac
   done
 }
@@ -214,22 +190,20 @@ editors() {
 languages() {
   while true; do
     clear
-    echo "--- Languages ---"
-    echo "[1] Golang"
-    echo "[2] Rust"
-    echo "[3] Node (via nvm)"
-    echo "[4] ${COLOR_DARK_GRAY}Back to main menu${COLOR_NONE}"
-    read -p "Enter number: " ans
+    title "Languages"
+    local choice
+    choice=$(gum choose --header "Select to install (Esc = back)" \
+      "Golang" "Rust" "Node (via nvm)" "← Back")
 
-    case "$ans" in
-      1) install_golang ;;
-      2) install_rust ;;
-      3)
-        read -p "Which version of Node do you want to install? (e.g., --lts, 20): " nodeVersion
+    case "$choice" in
+      "Golang") install_golang ;;
+      "Rust")   install_rust ;;
+      "Node (via nvm)")
+        local nodeVersion
+        nodeVersion=$(gum input --prompt "Node version: " --placeholder "e.g. --lts, 20")
         install_node "${nodeVersion}"
         ;;
-      4) break ;;
-      *) echo "Please enter a valid number." && sleep 2 ;;
+      "← Back"|"") break ;;
     esac
   done
 }
@@ -237,17 +211,15 @@ languages() {
 tools() {
   while true; do
     clear
-    echo "--- Tools ---"
-    echo "[1] Postman"
-    echo "[2] Obsidian"
-    echo "[3] ${COLOR_DARK_GRAY}Back to main menu${COLOR_NONE}"
-    read -p "Enter number: " ans
+    title "Tools"
+    local choice
+    choice=$(gum choose --header "Select to install (Esc = back)" \
+      "Postman" "Obsidian" "← Back")
 
-    case "$ans" in
-      1) install_postman ;;
-      2) install_obsidian ;;
-      3) break ;;
-      *) echo "Please enter a valid number." && sleep 2 ;;
+    case "$choice" in
+      "Postman")   install_postman ;;
+      "Obsidian")  install_obsidian ;;
+      "← Back"|"") break ;;
     esac
   done
 }
@@ -257,235 +229,225 @@ tools() {
 ################################################################
 
 install_neovim() {
-  printf "Installing neovim..."
-  brew_install_wrapper "neovim" >/dev/null 2>&1 &
-  spinner
+  brew_install_wrapper "neovim"
 
   if [ -d "${HOME}/.config/nvim" ]; then
-    read -p "Neovim config directory already exists. Replace it? [y/N] " yn
-    case $yn in
-      [Yy]*)
-        echo "Backing up existing config to ~/.config/nvim.bak"
-        mv "${HOME}/.config/nvim" "${HOME}/.config/nvim.bak"
-        rsync -azvh neovim/* "${HOME}/.config/nvim"
-        echo "Running ':Lazy install'..."
-        nvim --headless -c "Lazy! install" -c "qa"
-        ;;
-      *) echo "Skipping config setup." ;;
-    esac
+    if gum confirm "Neovim config already exists. Replace it?"; then
+      info "Backing up existing config to ~/.config/nvim.bak"
+      rm -rf "${HOME}/.config/nvim.bak"
+      mv "${HOME}/.config/nvim" "${HOME}/.config/nvim.bak"
+      rsync -azh neovim/* "${HOME}/.config/nvim"
+      spin "Running ':Lazy install'" nvim --headless -c "Lazy! install" -c "qa"
+    else
+      warn "Skipping config setup."
+    fi
   else
     mkdir -p "${HOME}/.config/"
-    rsync -azvh neovim/* "${HOME}/.config/nvim"
-    echo "Running ':Lazy install'..."
-    nvim --headless -c "Lazy! install" -c "qa"
+    rsync -azh neovim/* "${HOME}/.config/nvim"
+    spin "Running ':Lazy install'" nvim --headless -c "Lazy! install" -c "qa"
   fi
 
-  printf "Installing dependencies (ctags, python)..."
-  brew_install_wrapper "ctags" "python" >/dev/null 2>&1 &
-  spinner
+  brew_install_wrapper "ctags" "python"
   pip_install_wrapper "cmake-language-server" "pynvim"
 
-  echo -e "${COLOR_GREEN}Neovim setup complete.${COLOR_NONE}"
-  read -p "Press [Enter] to continue..."
+  ok "Neovim setup complete."
+  pause
 }
 
 install_zsh() {
-  # macOS 기본 셸이 zsh이지만, Homebrew로 최신 버전을 설치
-  printf "Installing latest zsh via Homebrew..."
-  brew_install_wrapper "zsh" >/dev/null 2>&1 &
-  spinner
+  brew_install_wrapper "zsh"
 
-  # Homebrew Zsh를 기본 셸로 설정
+  # Homebrew zsh를 기본 셸로 설정
   local brew_zsh_path
   brew_zsh_path=$(brew --prefix)/bin/zsh
   if ! grep -q "$brew_zsh_path" /etc/shells; then
-    echo "Adding Homebrew Zsh to /etc/shells..."
-    echo "$brew_zsh_path" | sudo tee -a /etc/shells
+    info "Adding Homebrew Zsh to /etc/shells..."
+    echo "$brew_zsh_path" | sudo tee -a /etc/shells >/dev/null
   fi
   if [[ "$SHELL" != "$brew_zsh_path" ]]; then
-    echo "Changing default shell to Homebrew Zsh. You may need to enter your password."
+    info "Changing default shell to Homebrew Zsh (password may be required)."
     chsh -s "$brew_zsh_path"
-    echo -e "${COLOR_YELLOW}Shell changed. Please restart your terminal for it to take effect.${COLOR_NONE}"
+    warn "Shell changed. Restart terminal to take effect."
   fi
 
-  # oh-my-zsh 설치
+  # oh-my-zsh
   if [ ! -d "${HOME}/.oh-my-zsh" ]; then
-    printf "Installing oh-my-zsh..."
-    sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended >/dev/null 2>&1 &
-    spinner
+    spin "Installing oh-my-zsh" bash -c \
+      'sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended'
   else
-    echo -e "${COLOR_GREEN}Oh My Zsh is already installed.${COLOR_NONE}"
+    ok "oh-my-zsh already installed."
   fi
 
-  # zshrc, aliases 복사
-  echo "Copying .zshrc and .aliases..."
-  cp -av zshrc "${HOME}/.zshrc"
-  cp -av aliases "${HOME}/.aliases"
+  info "Copying .zshrc and .aliases..."
+  cp -a zshrc "${HOME}/.zshrc"
+  cp -a aliases "${HOME}/.aliases"
 
-  # oh-my-zsh 플러그인 설치
-  echo "Installing oh-my-zsh plugins..."
-  ZSH_CUSTOM=${ZSH_CUSTOM:-~/.oh-my-zsh/custom}
-  custom_install_wrapper \
-    'git clone --depth=1 https://github.com/zsh-users/zsh-completions.git ${ZSH_CUSTOM}/plugins/zsh-completions' \
-    'git clone --depth=1 https://github.com/zsh-users/zsh-syntax-highlighting.git ${ZSH_CUSTOM}/plugins/zsh-syntax-highlighting' \
-    'git clone --depth=1 https://github.com/zsh-users/zsh-autosuggestions ${ZSH_CUSTOM}/plugins/zsh-autosuggestions' \
-    'git clone --depth=1 https://github.com/Aloxaf/fzf-tab ${ZSH_CUSTOM}/plugins/fzf-tab' \
-    'git clone --depth=1 https://github.com/spaceship-prompt/spaceship-prompt.git ${ZSH_CUSTOM}/themes/spaceship-prompt' \
-    >/dev/null 2>&1
-    
-  # spaceship 테마 심볼릭 링크 생성 (오류 방지를 위해 -f 옵션 추가)
+  # oh-my-zsh 플러그인
+  local ZSH_CUSTOM=${ZSH_CUSTOM:-~/.oh-my-zsh/custom}
+  local plugins=(
+    "https://github.com/zsh-users/zsh-completions.git|${ZSH_CUSTOM}/plugins/zsh-completions"
+    "https://github.com/zsh-users/zsh-syntax-highlighting.git|${ZSH_CUSTOM}/plugins/zsh-syntax-highlighting"
+    "https://github.com/zsh-users/zsh-autosuggestions|${ZSH_CUSTOM}/plugins/zsh-autosuggestions"
+    "https://github.com/Aloxaf/fzf-tab|${ZSH_CUSTOM}/plugins/fzf-tab"
+    "https://github.com/spaceship-prompt/spaceship-prompt.git|${ZSH_CUSTOM}/themes/spaceship-prompt"
+  )
+  for p in "${plugins[@]}"; do
+    local url="${p%%|*}" dst="${p##*|}"
+    [ -d "$dst" ] || spin "Cloning $(basename "$dst")" git clone --depth=1 "$url" "$dst"
+  done
   ln -sf "${ZSH_CUSTOM}/themes/spaceship-prompt/spaceship.zsh-theme" "${ZSH_CUSTOM}/themes/spaceship.zsh-theme"
 
-  # fzf 설치
+  # fzf
   if [ ! -d "${HOME}/.fzf" ]; then
-      printf "Installing fzf..."
-      git clone --depth 1 https://github.com/junegunn/fzf.git ~/.fzf >/dev/null 2>&1
-      ~/.fzf/install --all >/dev/null 2>&1 &
-      spinner
+    spin "Installing fzf" git clone --depth 1 https://github.com/junegunn/fzf.git "${HOME}/.fzf"
+    spin "Configuring fzf" "${HOME}/.fzf/install" --all
   fi
-  
-  read -p "Do you want to install Nerd Fonts (FiraCode)? [y/N] " yn
-  case $yn in
-    [Yy]*)
-      echo "Installing Nerd Fonts via Homebrew..."
-      brew tap homebrew/cask-fonts
-      brew_cask_install_wrapper "font-fira-code-nerd-font" >/dev/null 2>&1 &
-      spinner
-      echo -e "${COLOR_GREEN}Nerd Font installed. Please set it in your terminal preferences.${COLOR_NONE}"
-      ;;
-    *) echo "Skipping Nerd Font installation." ;;
-  esac
-  
-  echo -e "${COLOR_GREEN}Zsh setup complete.${COLOR_NONE}"
-  read -p "Press [Enter] to continue..."
+
+  if gum confirm "Install Nerd Fonts (FiraCode)?"; then
+    brew_cask_install_wrapper "font-fira-code-nerd-font"
+    ok "Nerd Font installed. Set it in your terminal preferences."
+  else
+    warn "Skipping Nerd Font installation."
+  fi
+
+  ok "Zsh setup complete."
+  pause
+}
+
+install_fish() {
+  # fish + 의존 도구 (starship 프롬프트, zoxide, eza, fzf)
+  brew_install_wrapper "fish" "starship" "zoxide" "eza" "fzf"
+
+  # fish를 기본 셸로 설정
+  local brew_fish_path
+  brew_fish_path=$(brew --prefix)/bin/fish
+  if ! grep -q "$brew_fish_path" /etc/shells; then
+    info "Adding fish to /etc/shells..."
+    echo "$brew_fish_path" | sudo tee -a /etc/shells >/dev/null
+  fi
+  if [[ "$SHELL" != "$brew_fish_path" ]]; then
+    info "Changing default shell to fish (password may be required)."
+    chsh -s "$brew_fish_path"
+    warn "Shell changed. Restart terminal to take effect."
+  fi
+
+  # fish 설정 복사 (config, conf.d, completions, plugin 목록)
+  info "Copying fish configuration..."
+  mkdir -p "${HOME}/.config/fish/conf.d" "${HOME}/.config/fish/completions"
+  cp -a fish/config.fish "${HOME}/.config/fish/config.fish"
+  cp -a fish/fish_plugins "${HOME}/.config/fish/fish_plugins"
+  rsync -azh fish/conf.d/ "${HOME}/.config/fish/conf.d/"
+  rsync -azh fish/completions/ "${HOME}/.config/fish/completions/"
+
+  # fisher 설치 후 fish_plugins 기반으로 플러그인 복원 (fzf.fish, nvm.fish 등)
+  spin "Installing fisher and plugins" fish -c \
+    'curl -sL https://raw.githubusercontent.com/jorgebucaran/fisher/main/functions/fisher.fish | source && fisher install jorgebucaran/fisher >/dev/null 2>&1; fisher update'
+
+  ok "Fish setup complete."
+  pause
 }
 
 install_tmux() {
-  printf "Installing tmux..."
-  brew_install_wrapper "tmux" >/dev/null 2>&1 &
-  spinner
+  brew_install_wrapper "tmux"
 
-  local file=".tmux.conf"
-  if [ -f "${HOME}/${file}" ]; then
-    read -p "${file} already exists. Overwrite it? [y/N] " yn
-    case $yn in
-      [Yy]*) cp -v tmux.conf "${HOME}/.tmux.conf" ;;
-      *) echo "Skipping config copy." ;;
-    esac
+  if [ -f "${HOME}/.tmux.conf" ]; then
+    if gum confirm ".tmux.conf already exists. Overwrite it?"; then
+      cp tmux.conf "${HOME}/.tmux.conf" && ok "Copied .tmux.conf"
+    else
+      warn "Skipping config copy."
+    fi
   else
-    cp -v tmux.conf "${HOME}/.tmux.conf"
+    cp tmux.conf "${HOME}/.tmux.conf" && ok "Copied .tmux.conf"
   fi
 
   if [ ! -d "${HOME}/.tmux/plugins/tpm" ]; then
-      echo "Installing Tmux Plugin Manager (tpm)..."
-      git clone https://github.com/tmux-plugins/tpm ~/.tmux/plugins/tpm >/dev/null 2>&1
-      echo "To finish, open tmux and press 'Prefix + I' to install plugins."
+    spin "Installing TPM" git clone https://github.com/tmux-plugins/tpm "${HOME}/.tmux/plugins/tpm"
+    info "Open tmux and press 'Prefix + I' to install plugins."
   else
-      echo "TPM already installed."
+    ok "TPM already installed."
   fi
-  
-  echo -e "${COLOR_GREEN}Tmux setup complete.${COLOR_NONE}"
-  read -p "Press [Enter] to continue..."
+
+  ok "Tmux setup complete."
+  pause
 }
 
 install_github_tools() {
-  printf "Installing GitHub CLI (gh)..."
-  brew_install_wrapper "gh" >/dev/null 2>&1 &
-  spinner
-  echo -e "${COLOR_GREEN}gh has been installed.${COLOR_NONE}"
-  read -p "Press [Enter] to continue..."
+  brew_install_wrapper "gh"
+  ok "gh has been installed."
+  pause
 }
 
 install_alacritty() {
-  printf "Installing Alacritty..."
-  brew_cask_install_wrapper "alacritty" >/dev/null 2>&1 &
-  spinner
-  echo -e "${COLOR_GREEN}Alacritty has been installed.${COLOR_NONE}"
-  read -p "Press [Enter] to continue..."
+  brew_cask_install_wrapper "alacritty"
+  ok "Alacritty has been installed."
+  pause
 }
 
 install_lazygit() {
-  printf "Installing lazygit..."
-  brew_install_wrapper "lazygit" >/dev/null 2>&1 &
-  spinner
-
-  if [ ! -d "${HOME}/.config/lazygit" ]; then
-    mkdir -p "${HOME}/.config/lazygit"
-  fi
-  cp -av lazygit.yml "${HOME}/.config/lazygit/config.yml"
-  echo -e "${COLOR_GREEN}lazygit has been installed and configured.${COLOR_NONE}"
-  read -p "Press [Enter] to continue..."
+  brew_install_wrapper "lazygit"
+  mkdir -p "${HOME}/.config/lazygit"
+  cp -a lazygit.yml "${HOME}/.config/lazygit/config.yml"
+  ok "lazygit installed and configured."
+  pause
 }
 
 install_lazydocker() {
-  printf "Installing lazydocker..."
-  brew install jesseduffield/lazydocker/lazydocker >/dev/null 2>&1 &
-  spinner
-  echo -e "${COLOR_GREEN}lazydocker has been installed.${COLOR_NONE}"
-  read -p "Press [Enter] to continue..."
+  spin "Installing lazydocker" brew install jesseduffield/lazydocker/lazydocker
+  ok "lazydocker has been installed."
+  pause
 }
 
 install_node() {
-  local version=${1:-"--lts"} # 기본값으로 lts 버전 설치
-  
-  echo "Installing nvm (Node Version Manager)..."
+  local version=${1:-"--lts"}
+
+  info "Installing nvm (Node Version Manager)..."
   curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh | bash
 
-  # nvm 환경 변수 로드
   export NVM_DIR="$HOME/.nvm"
   [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
   [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"
 
-  echo "Installing Node.js version: ${version}"
+  info "Installing Node.js version: ${version}"
   nvm install "${version}"
   nvm use "${version}"
   nvm alias default "${version}"
-  
-  echo -e "${COLOR_GREEN}Node.js setup via nvm is complete.${COLOR_NONE}"
-  read -p "Press [Enter] to continue..."
+
+  ok "Node.js setup via nvm complete."
+  pause
 }
 
 install_rust() {
-  echo "Installing Rust..."
+  info "Installing Rust..."
   curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
   source "${HOME}/.cargo/env"
-  echo -e "${COLOR_GREEN}Rust installation is complete.${COLOR_NONE}"
-  read -p "Press [Enter] to continue..."
+  ok "Rust installation complete."
+  pause
 }
 
 install_golang() {
-  printf "Installing Golang..."
-  brew_install_wrapper "go" >/dev/null 2>&1 &
-  spinner
-
+  brew_install_wrapper "go"
   mkdir -p "${HOME}/go"
-  echo "GOPATH will be set to ~/go"
-  echo -e "${COLOR_GREEN}Golang installation is complete.${COLOR_NONE}"
-  read -p "Press [Enter] to continue..."
+  info "GOPATH will be set to ~/go"
+  ok "Golang installation complete."
+  pause
 }
 
 install_postman() {
-  printf "Installing Postman..."
-  brew_cask_install_wrapper "postman" >/dev/null 2>&1 &
-  spinner
-  echo -e "${COLOR_GREEN}Postman has been installed.${COLOR_NONE}"
-  read -p "Press [Enter] to continue..."
+  brew_cask_install_wrapper "postman"
+  ok "Postman has been installed."
+  pause
 }
 
 install_obsidian() {
-  printf "Installing Obsidian..."
-  brew_cask_install_wrapper "obsidian" >/dev/null 2>&1 &
-  spinner
-  echo -e "${COLOR_GREEN}Obsidian has been installed.${COLOR_NONE}"
-  read -p "Press [Enter] to continue..."
+  brew_cask_install_wrapper "obsidian"
+  ok "Obsidian has been installed."
+  pause
 }
 
 install_vscode() {
-  printf "Installing Visual Studio Code..."
-  brew_cask_install_wrapper "visual-studio-code" >/dev/null 2>&1 &
-  spinner
-  echo -e "${COLOR_GREEN}Visual Studio Code has been installed.${COLOR_NONE}"
-  read -p "Press [Enter] to continue..."
+  brew_cask_install_wrapper "visual-studio-code"
+  ok "Visual Studio Code has been installed."
+  pause
 }
 
 ##-------------------------------------------------------------------------##

@@ -30,14 +30,7 @@ return {
 					enabled = true,
 				},
 
-				-- this will change the font size on alacritty when in zen mode
-				-- requires  Alacritty Version 0.10.0 or higher
-				-- uses `alacritty msg` subcommand to change font size
-				alacritty = {
-					enabled = true,
-					font = "30", -- font size
 				},
-			},
 		},
 		-- callback where you can add custom code when the Zen window opens
 		on_open = function(win) end,

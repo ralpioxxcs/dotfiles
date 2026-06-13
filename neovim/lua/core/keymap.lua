@@ -76,9 +76,9 @@ keymap("n", "<leader>z", ":TagbarToggle<CR>", opts)
 -- Telescope
 --  Ctrl + p : File files
 --  Ctrl + f : Find string
---keymap("n", "<C-p>", ":Telescope find_files<CR>", opts)
---keymap("n", "<C-f>", ":Telescope live_grep<CR>", opts)
---keymap("n", "<C-b>", ":Telescope buffers<CR>", opts)
+keymap("n", "<C-p>", ":Telescope find_files<CR>", opts)
+keymap("n", "<C-f>", ":Telescope live_grep<CR>", opts)
+keymap("n", "<C-b>", ":Telescope buffers<CR>", opts)
 
 -- Formatter
 -- <leader> + f : Formatting

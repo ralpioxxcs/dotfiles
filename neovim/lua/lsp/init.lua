@@ -3,18 +3,8 @@ if not status_ok then
   return
 end
 
-lspconfig.pyright.setup {}
-lspconfig.denols.setup {
-  root_dir = lspconfig.util.root_pattern "deno.json",
-}
 lspconfig.ts_ls.setup {
   root_dir = lspconfig.util.root_pattern "package.json",
-}
-lspconfig.rust_analyzer.setup {
-  -- Server-specific settings. See `:help lspconfig-setup`
-  settings = {
-    ["rust-analyzer"] = {},
-  },
 }
 
 -- Global mappings.

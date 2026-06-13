@@ -29,23 +29,11 @@ return {
           extra_args = { "--indent-type", "Spaces", "--indent-width", "2", "-" },
         }),
 
-        ---- Python
-        formatting.black,
-
         ---- Code Spell Checker
         formatting.codespell,
 
-        ---- Shell
-        formatting.shellharden,
-
-        ---- SQL
-        formatting.sqlformat,
-        --formatting.sql_formatter,
-
         -- Linter
         diagnostics.codespell,
-        diagnostics.commitlint,
-        diagnostics.dotenv_linter,
 
         -- Code Actions
         code_actions.gitsigns,

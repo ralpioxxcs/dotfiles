@@ -172,25 +172,28 @@ terminal() {
   while true; do
     clear
     echo -e "[1] zsh & oh-my-zsh"
-    echo -e "[2] tmux"
-    echo -e "[3] lazy tools (lazygit, lazydocker)"
-    echo -e "[4] github tools (gh, ...)"
-    echo -e "[5] alacritty"
-    echo -e "[6] ${COLOR_DARK_GRAY}back${COLOR_NONE}"
+    echo -e "[2] fish (fisher, starship)"
+    echo -e "[3] tmux"
+    echo -e "[4] lazy tools (lazygit, lazydocker)"
+    echo -e "[5] github tools (gh, ...)"
+    echo -e "[6] alacritty"
+    echo -e "[7] ${COLOR_DARK_GRAY}back${COLOR_NONE}"
     read ans
 
     if [ "$ans" != "${ans#[1]}" ]; then
       install_zsh
     elif [ "$ans" != "${ans#[2]}" ]; then
-      install_tmux
+      install_fish
     elif [ "$ans" != "${ans#[3]}" ]; then
+      install_tmux
+    elif [ "$ans" != "${ans#[4]}" ]; then
       install_lazygit
       install_lazydocker
-    elif [ "$ans" != "${ans#[4]}" ]; then
-      install_github_tools
     elif [ "$ans" != "${ans#[5]}" ]; then
-      install_alacritty
+      install_github_tools
     elif [ "$ans" != "${ans#[6]}" ]; then
+      install_alacritty
+    elif [ "$ans" != "${ans#[7]}" ]; then
       break
     else
       echo "please answer number"
@@ -419,6 +422,56 @@ install_zsh() {
     *) echo "Please answer yes or no." ;;
     esac
   done
+}
+
+install_fish() {
+  local pac="fish"
+
+  check_package_installed ${pac}
+
+  if [ "${retVal}" = "True" ]; then
+    echo -e "${COLOR_GREEN}${pac} is already installed${COLOR_NONE}"
+  else
+    echo -e "${COLOR_RED}${pac} is not installed${COLOR_NONE}"
+    printf "installing fish.."
+    apt_install_wrapper ${pac} >/dev/null 2>&1 &
+    spinner
+
+    fish --version
+    # fish를 /etc/shells에 등록 후 기본 셸로 설정
+    if ! grep -q "$(which fish)" /etc/shells; then
+      echo "$(which fish)" | sudo tee -a /etc/shells
+    fi
+    chsh -s $(which fish)
+  fi
+
+  # 의존 도구 설치 (starship, zoxide, eza) - apt에 없거나 구버전이라 공식 경로 사용
+  echo -e "${COLOR_GREEN}install fish dependencies (starship, zoxide, eza)${COLOR_NONE}"
+  custom_install_wrapper \
+    'curl -sS https://starship.rs/install.sh | sh -s -- -y' \
+    'curl -sSfL https://raw.githubusercontent.com/ajeetdsouza/zoxide/main/install.sh | sh' \
+    'sudo mkdir -p /etc/apt/keyrings' \
+    'wget -qO- https://raw.githubusercontent.com/eza-community/eza/main/deb.asc | sudo gpg --dearmor -o /etc/apt/keyrings/gierens.gpg' \
+    'echo "deb [signed-by=/etc/apt/keyrings/gierens.gpg] http://deb.gierens.de stable main" | sudo tee /etc/apt/sources.list.d/gierens.list' \
+    'sudo apt update' \
+    'sudo apt install -y eza fzf' \
+    >/dev/null 2>&1 &
+  spinner
+
+  # fish 설정 복사 (config, conf.d, completions, plugin 목록)
+  echo "Copy fish configuration"
+  mkdir -p ${HOME}/.config/fish/conf.d ${HOME}/.config/fish/completions
+  cp -av fish/config.fish ${HOME}/.config/fish/config.fish
+  cp -av fish/fish_plugins ${HOME}/.config/fish/fish_plugins
+  rsync -azh fish/conf.d/ ${HOME}/.config/fish/conf.d/
+  rsync -azh fish/completions/ ${HOME}/.config/fish/completions/
+
+  # fisher 플러그인 매니저 설치 후 fish_plugins 기반으로 플러그인 복원 (fzf.fish, nvm.fish 등)
+  echo -e "${COLOR_GREEN}install fisher and plugins${COLOR_NONE}"
+  fish -c 'curl -sL https://raw.githubusercontent.com/jorgebucaran/fisher/main/functions/fisher.fish | source && fisher install jorgebucaran/fisher >/dev/null 2>&1; fisher update' >/dev/null 2>&1 &
+  spinner
+
+  echo -e "${COLOR_GREEN}fish setup complete${COLOR_NONE}"
 }
 
 install_tmux() {

@@ -1,8 +1,0 @@
----
-- name: Zsh
-  include: zsh.yaml
-  tags: zsh
-
-- name: Tmux
-  include_tasks: tmux.yaml
-  tags: tmux
